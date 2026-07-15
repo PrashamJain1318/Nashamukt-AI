@@ -62,7 +62,7 @@ export function OnboardingPage() {
     try {
       await apiClient.post('/user/onboarding', data)
       toast.success("Profile customized successfully!")
-      navigate('/dashboard')
+      navigate('/plan')
     } catch (err) {
       toast.error("Failed to save profile. Please try again.")
       console.error(err)

@@ -23,6 +23,7 @@ const CommunityPage = React.lazy(() => import('@/pages/community').then(m => ({ 
 const ProfilePage = React.lazy(() => import('@/pages/profile').then(m => ({ default: m.ProfilePage })))
 const SettingsPage = React.lazy(() => import('@/pages/settings').then(m => ({ default: m.SettingsPage })))
 const OnboardingPage = React.lazy(() => import('@/pages/onboarding').then(m => ({ default: m.OnboardingPage })))
+const PlanPage = React.lazy(() => import('@/pages/plan').then(m => ({ default: m.PlanPage })))
 
 function App() {
   return (
@@ -42,8 +43,9 @@ function App() {
 
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
-            {/* Onboarding is protected but not inside dashboard layout */}
+            {/* Onboarding and Plan are protected but not inside dashboard layout */}
             <Route path="onboarding" element={<OnboardingPage />} />
+            <Route path="plan" element={<PlanPage />} />
             
             <Route element={<DashboardLayout />}>
               <Route path="dashboard" element={<Dashboard />} />
