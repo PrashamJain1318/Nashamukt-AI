@@ -171,4 +171,44 @@ mock.onPost('/ai/craving').reply((config) => {
   return [200, { reply }]
 })
 
+// Health Analytics API
+mock.onGet('/health').reply(() => {
+  return [200, {
+    metrics: {
+      smokeFreeDays: dashboardData.smokeFreeDays,
+      moneySaved: dashboardData.moneySaved,
+      lifeHoursRegained: 120, // Mocked 5 days * 24h
+      healthScore: dashboardData.healthScore,
+      riskReduction: 45 // 45% risk reduction
+    },
+    charts: {
+      dailyConsumption: [
+        { date: '1', amount: 5 },
+        { date: '2', amount: 4 },
+        { date: '3', amount: 3 },
+        { date: '4', amount: 2 },
+        { date: '5', amount: 0 },
+        { date: '6', amount: 0 },
+        { date: '7', amount: 0 },
+      ],
+      moodTrends: [
+        { subject: 'Happy', A: 80, fullMark: 100 },
+        { subject: 'Stressed', A: 40, fullMark: 100 },
+        { subject: 'Anxious', A: 30, fullMark: 100 },
+        { subject: 'Calm', A: 90, fullMark: 100 },
+        { subject: 'Sad', A: 20, fullMark: 100 },
+      ],
+      cravings: [
+        { date: 'Mon', count: 10 },
+        { date: 'Tue', count: 8 },
+        { date: 'Wed', count: 6 },
+        { date: 'Thu', count: 4 },
+        { date: 'Fri', count: 2 },
+        { date: 'Sat', count: 1 },
+        { date: 'Sun', count: 0 },
+      ]
+    }
+  }]
+})
+
 export { mock };
