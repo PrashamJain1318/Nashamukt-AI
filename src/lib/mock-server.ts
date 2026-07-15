@@ -28,6 +28,18 @@ const dashboardData = {
 
 // === ROUTES ===
 
+// Onboarding API
+mock.onPost('/user/onboarding').reply((config) => {
+  const data = JSON.parse(config.data)
+  
+  // Update mock dashboard stats based on onboarding data
+  dashboardData.moneySaved = 0 // Baseline starts at 0
+  dashboardData.streak = 0 // Baseline starts at 0
+  
+  // We can also store the user profile here, but for now we just return 200 OK
+  return [200, { message: 'Onboarding complete', user: data }]
+})
+
 // Dashboard
 mock.onGet('/dashboard').reply(200, dashboardData);
 

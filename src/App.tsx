@@ -22,6 +22,7 @@ const HealthTimelinePage = React.lazy(() => import('@/pages/health').then(m => (
 const CommunityPage = React.lazy(() => import('@/pages/community').then(m => ({ default: m.CommunityPage })))
 const ProfilePage = React.lazy(() => import('@/pages/profile').then(m => ({ default: m.ProfilePage })))
 const SettingsPage = React.lazy(() => import('@/pages/settings').then(m => ({ default: m.SettingsPage })))
+const OnboardingPage = React.lazy(() => import('@/pages/onboarding').then(m => ({ default: m.OnboardingPage })))
 
 function App() {
   return (
@@ -39,8 +40,11 @@ function App() {
             <Route path="design" element={<DesignSystemPage />} />
           </Route>
 
-          {/* Protected Dashboard Routes */}
+          {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
+            {/* Onboarding is protected but not inside dashboard layout */}
+            <Route path="onboarding" element={<OnboardingPage />} />
+            
             <Route element={<DashboardLayout />}>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="tracker" element={<TrackerPage />} />

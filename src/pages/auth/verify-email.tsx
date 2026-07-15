@@ -29,8 +29,8 @@ export function VerifyEmailPage() {
           </p>
         </div>
 
-        <Link to="/login" className="w-full mt-4">
-          <Button className="w-full" variant="secondary">Return to Login</Button>
+        <Link to="/onboarding" className="w-full mt-4">
+          <Button className="w-full" variant="secondary">Continue to Onboarding</Button>
         </Link>
       </div>
     </AuthLayout>
