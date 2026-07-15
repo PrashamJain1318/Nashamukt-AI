@@ -21,9 +21,11 @@ import { useTheme } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
 import { Toaster } from "sonner"
 import { cn } from "@/lib/utils"
+import { CravingAssistant } from "./craving-assistant"
 
 export function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isCravingAssistantOpen, setIsCravingAssistantOpen] = useState(false)
   const { logout, user } = useAuth()
   const { theme, setTheme } = useTheme()
   const location = useLocation()
@@ -161,6 +163,30 @@ export function DashboardLayout() {
         </div>
       </main>
       
+      {/* Floating Action Button */}
+      <motion.div 
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+        className="fixed bottom-6 right-6 z-40"
+      >
+        <Button 
+          size="lg" 
+          variant="destructive" 
+          className="rounded-full shadow-2xl shadow-destructive/50 h-14 px-6 font-bold text-base flex items-center gap-2 group overflow-hidden"
+          onClick={() => setIsCravingAssistantOpen(true)}
+        >
+          <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform" />
+          <HeartPulse className="h-5 w-5 animate-pulse" />
+          <span>I'm Having a Craving</span>
+        </Button>
+      </motion.div>
+
+      <CravingAssistant 
+        isOpen={isCravingAssistantOpen} 
+        onClose={() => setIsCravingAssistantOpen(false)} 
+      />
+
       <Toaster position="top-center" richColors theme={theme as 'light' | 'dark' | 'system'} />
     </div>
   )

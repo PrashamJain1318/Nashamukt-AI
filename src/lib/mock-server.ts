@@ -151,4 +151,24 @@ mock.onPost('/tracker/log').reply((config) => {
   return [200, newLog]
 })
 
+// AI Craving Chat API
+mock.onPost('/ai/craving').reply((config) => {
+  const data = JSON.parse(config.data)
+  const userMessage = data.message.toLowerCase()
+  
+  let reply = "I understand this is incredibly difficult. Take a deep breath. You've made it this far, and this craving is just a temporary wave. It will pass. Can you tell me more about what triggered this?"
+  
+  if (userMessage.includes('stress') || userMessage.includes('work')) {
+    reply = "Stress is a huge trigger. It's completely normal to feel this way right now. Let's try the 4-7-8 breathing exercise together. Have you drank any water recently?"
+  } else if (userMessage.includes('friend') || userMessage.includes('social') || userMessage.includes('party')) {
+    reply = "Social situations are tough. Remember why you started this journey. If it's too much, it's okay to step outside for a few minutes or even leave early. Your health comes first."
+  } else if (userMessage.includes('bored')) {
+    reply = "Boredom can easily trick your brain into wanting a dopamine hit. How about we go for a quick 5-minute walk, or you can play a quick game on your phone? Let's distract your mind."
+  } else if (userMessage.includes('help')) {
+    reply = "I'm right here with you. Please focus on the timer on the left. Watch it count down. The peak of this craving will only last a few minutes."
+  }
+
+  return [200, { reply }]
+})
+
 export { mock };
