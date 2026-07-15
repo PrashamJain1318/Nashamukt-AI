@@ -13,6 +13,7 @@ import { Activity, Plus, FileText, PieChart as PieChartIcon } from 'lucide-react
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import { useTheme } from '@/components/theme-provider'
 import { chartColors } from '@/components/ui/chart'
+import { useTrackerLogs, useLogHabit } from '@/hooks/api/useTracker'
 
 const logSchema = z.object({
   substance: z.string().min(1, { message: 'Please select a substance.' }),
@@ -24,22 +25,7 @@ const logSchema = z.object({
 
 type LogFormValues = z.infer<typeof logSchema>
 
-const mockChartData = [
-  { name: 'Mon', value: 3 },
-  { name: 'Tue', value: 2 },
-  { name: 'Wed', value: 0 },
-  { name: 'Thu', value: 1 },
-  { name: 'Fri', value: 5 },
-  { name: 'Sat', value: 2 },
-  { name: 'Sun', value: 0 },
-]
-
-const triggersData = [
-  { name: 'Stress', value: 40 },
-  { name: 'Social', value: 30 },
-  { name: 'Boredom', value: 20 },
-  { name: 'Anxiety', value: 10 },
-]
+// Schema and type are kept exactly as is.
 
 export function TrackerPage() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
@@ -66,16 +52,38 @@ export function TrackerPage() {
     return data
   }
 
-  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<LogFormValues>({
+  const { data, isLoading } = useTrackerLogs()
+  const logHabitMutation = useLogHabit()
+
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<LogFormValues>({
     resolver: zodResolver(logSchema),
-    defaultValues: { quantity: 1 }
+    defaultValues: { quantity: 1, time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric" }) }
   })
 
-  const onSubmit = async () => {
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    toast.success('Log entry recorded successfully.')
-    reset()
+  const onSubmit = async (formData: LogFormValues) => {
+    try {
+      await logHabitMutation.mutateAsync({
+        product: formData.substance,
+        quantity: formData.quantity,
+        time: formData.time,
+        mood: formData.mood,
+        trigger: formData.reason,
+        notes: "Logged via Tracker"
+      })
+      toast.success('Log entry recorded successfully.')
+      reset()
+    } catch {
+      toast.error('Failed to save log.')
+    }
   }
+
+  if (isLoading) {
+    return <div className="p-8 text-center animate-pulse">Loading Tracker Data...</div>
+  }
+
+  const logs = data?.logs || []
+  const weeklyChart = data?.charts?.weeklyChart || []
+  const triggersData = data?.charts?.triggers || []
 
   return (
     <motion.div 
@@ -163,8 +171,8 @@ export function TrackerPage() {
                   {errors.reason && <p className="text-xs text-destructive">{errors.reason.message}</p>}
                 </div>
 
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? (
+                <Button type="submit" className="w-full" disabled={logHabitMutation.isPending}>
+                  {logHabitMutation.isPending ? (
                     <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
                   ) : 'Save Log'}
                 </Button>
@@ -183,7 +191,7 @@ export function TrackerPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ProgressChart data={mockChartData} dataKey="value" color="danger" />
+              <ProgressChart data={weeklyChart} dataKey="value" color="danger" />
             </CardContent>
           </Card>
 
@@ -206,7 +214,7 @@ export function TrackerPage() {
                       dataKey="value"
                       stroke="none"
                     >
-                      {triggersData.map((_, index) => (
+                      {triggersData.map((_: unknown, index: number) => (
                         <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                       ))}
                     </Pie>
@@ -226,19 +234,18 @@ export function TrackerPage() {
                   Recent Logs
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/30 border border-border/50">
-                  <div>
-                    <h4 className="font-semibold text-sm">Smoking (2 cigs)</h4>
-                    <p className="text-xs text-muted-foreground">Today at 10:30 AM • 😫 Stressed</p>
+              <CardContent className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+                {logs.map((log: Record<string, string | number>) => (
+                  <div key={log.id} className="flex items-center justify-between p-3 rounded-xl bg-secondary/30 border border-border/50">
+                    <div>
+                      <h4 className="font-semibold text-sm">{log.product} ({log.quantity})</h4>
+                      <p className="text-xs text-muted-foreground">{new Date(log.date).toLocaleDateString()} at {log.time} • {log.mood}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/30 border border-border/50">
-                  <div>
-                    <h4 className="font-semibold text-sm">Alcohol (1 peg)</h4>
-                    <p className="text-xs text-muted-foreground">Yesterday at 9:00 PM • 😊 Social</p>
-                  </div>
-                </div>
+                ))}
+                {logs.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-4">No logs yet.</p>
+                )}
               </CardContent>
             </Card>
           </div>

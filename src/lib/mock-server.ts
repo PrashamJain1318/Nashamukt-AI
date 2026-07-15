@@ -4,39 +4,70 @@ import { apiClient } from './api-client';
 // This sets the mock adapter on the default instance
 const mock = new MockAdapter(apiClient, { delayResponse: 800 });
 
-// === MOCK DATA ===
-const dashboardData = {
+// === PERSISTENT STATE ===
+const loadState = (key: string, defaultState: unknown) => {
+  const stored = localStorage.getItem(`nashamukti_${key}`)
+  return stored ? JSON.parse(stored) : defaultState
+}
+
+const saveState = (key: string, state: unknown) => {
+  localStorage.setItem(`nashamukti_${key}`, JSON.stringify(state))
+}
+
+const defaultDashboard = {
+  smokeFreeDays: 45,
   streak: 45,
-  level: 5,
   healthScore: 88,
   moneySaved: 4500,
-  dailyStats: [
-    { name: 'Mon', completed: 100 },
-    { name: 'Tue', completed: 80 },
-    { name: 'Wed', completed: 100 },
-    { name: 'Thu', completed: 90 },
-    { name: 'Fri', completed: 100 },
-    { name: 'Sat', completed: 70 },
-    { name: 'Sun', completed: 100 },
-  ],
+  xp: 1250,
+  todaysGoal: "Drink 3L of water",
+  dailyMotivation: "Every day is a new beginning. Stay strong!",
+  level: 5,
   achievements: [
     { title: "1 Month Clean", date: "Oct 12", icon: "Award" },
     { title: "First ₹1000 Saved", date: "Oct 5", icon: "Wallet" },
     { title: "7 Days Streak", date: "Sep 20", icon: "Flame" },
   ]
-};
+}
+
+const defaultLogs: Record<string, unknown>[] = [
+  { id: 1, date: new Date().toISOString(), product: "Smoking", quantity: 2, time: "10:30", mood: "Stressed", trigger: "Work meeting", notes: "Felt overwhelmed" }
+]
+
+const dashboardData = loadState('dashboard', defaultDashboard)
+let logsData = loadState('logs', defaultLogs)
+
+// Function to calculate charts based on logs
+const getChartData = () => {
+  // Mock implementations for chart data
+  const weeklyChart = [
+    { name: 'Mon', value: 3 },
+    { name: 'Tue', value: 2 },
+    { name: 'Wed', value: 0 },
+    { name: 'Thu', value: 1 },
+    { name: 'Fri', value: Math.random() > 0.5 ? 5 : 0 },
+    { name: 'Sat', value: 2 },
+    { name: 'Sun', value: 0 },
+  ]
+  const triggers = [
+    { name: 'Stress', value: 40 },
+    { name: 'Social', value: 30 },
+    { name: 'Boredom', value: 20 },
+    { name: 'Anxiety', value: 10 },
+  ]
+  return { weeklyChart, triggers }
+}
 
 // === ROUTES ===
 
 // Onboarding API
 mock.onPost('/user/onboarding').reply((config) => {
   const data = JSON.parse(config.data)
-  
-  // Update mock dashboard stats based on onboarding data
-  dashboardData.moneySaved = 0 // Baseline starts at 0
-  dashboardData.streak = 0 // Baseline starts at 0
-  
-  // We can also store the user profile here, but for now we just return 200 OK
+  dashboardData.moneySaved = 0
+  dashboardData.streak = 0
+  dashboardData.smokeFreeDays = 0
+  dashboardData.xp = 0
+  saveState('dashboard', dashboardData)
   return [200, { message: 'Onboarding complete', user: data }]
 })
 
@@ -86,6 +117,38 @@ mock.onPost('/ai/analyze').reply((config) => {
 })
 
 // Dashboard
-mock.onGet('/dashboard').reply(200, dashboardData);
+mock.onGet('/dashboard').reply(() => [200, dashboardData]);
+
+// Tracker GET
+mock.onGet('/tracker/logs').reply(() => {
+  return [200, {
+    logs: logsData,
+    charts: getChartData()
+  }]
+})
+
+// Tracker POST
+mock.onPost('/tracker/log').reply((config) => {
+  const data = JSON.parse(config.data)
+  const newLog = {
+    id: Date.now(),
+    date: new Date().toISOString(),
+    ...data
+  }
+  
+  // Update Logs
+  logsData = [newLog, ...logsData]
+  saveState('logs', logsData)
+  
+  // If user slipped (quantity > 0), reset streak
+  if (data.quantity > 0) {
+    dashboardData.streak = 0
+    dashboardData.healthScore = Math.max(0, dashboardData.healthScore - 2)
+  }
+  
+  saveState('dashboard', dashboardData)
+  
+  return [200, newLog]
+})
 
 export { mock };

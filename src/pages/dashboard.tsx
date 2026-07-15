@@ -1,5 +1,6 @@
+import React from 'react'
 import { motion, Variants } from "framer-motion"
-import { Activity, Flame, Wallet, HeartPulse, Award, ChevronRight } from 'lucide-react'
+import { Activity, Flame, Wallet, HeartPulse, Award, ChevronRight, Calendar, Target, Zap, Star } from 'lucide-react'
 import { useDashboardData } from '@/hooks/api/useDashboard'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -69,66 +70,34 @@ export function Dashboard() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      {/* Top 5 Metrics Row */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 mb-6">
+        <MetricCard title="Smoke-Free" value={`${data.smokeFreeDays} Days`} icon={<Calendar />} color="text-info" bg="bg-info" />
+        <MetricCard title="Streak" value={`${data.streak} Days`} icon={<Flame />} color="text-warning" bg="bg-warning" />
+        <MetricCard title="Health" value={`${data.healthScore}/100`} icon={<HeartPulse />} color="text-primary" bg="bg-primary" />
+        <MetricCard title="Saved" value={`₹${data.moneySaved}`} icon={<Wallet />} color="text-success" bg="bg-success" />
+        <MetricCard title="XP" value={data.xp} icon={<Star />} color="text-purple-500" bg="bg-purple-500" />
+      </div>
+
+      {/* Goal & Motivation Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
         <motion.div variants={itemVariants}>
-          <Glass variant="card" className="p-6 relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-warning/10 rounded-full blur-2xl group-hover:bg-warning/20 transition-colors" />
-            <div className="flex items-center gap-4 mb-4 relative z-10">
-              <div className="p-3 bg-warning/15 text-warning rounded-2xl">
-                <Flame className="h-6 w-6" />
-              </div>
-              <h3 className="font-semibold text-muted-foreground">Current Streak</h3>
-            </div>
-            <div className="relative z-10">
-              <span className="text-4xl font-display font-bold text-foreground">{data.streak}</span>
-              <span className="text-muted-foreground ml-2">Days</span>
-            </div>
+          <Glass variant="card" className="p-6 relative overflow-hidden group h-full">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl transition-colors" />
+            <h3 className="font-semibold text-muted-foreground flex items-center gap-2 mb-2">
+              <Target className="h-5 w-5 text-primary" /> Today's Goal
+            </h3>
+            <p className="text-xl font-display font-medium text-foreground">{data.todaysGoal}</p>
           </Glass>
         </motion.div>
-
+        
         <motion.div variants={itemVariants}>
-          <Glass variant="card" className="p-6 relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-success/10 rounded-full blur-2xl group-hover:bg-success/20 transition-colors" />
-            <div className="flex items-center gap-4 mb-4 relative z-10">
-              <div className="p-3 bg-success/15 text-success rounded-2xl">
-                <Wallet className="h-6 w-6" />
-              </div>
-              <h3 className="font-semibold text-muted-foreground">Money Saved</h3>
-            </div>
-            <div className="relative z-10">
-              <span className="text-4xl font-display font-bold text-foreground">₹{data.moneySaved.toLocaleString()}</span>
-            </div>
-          </Glass>
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <Glass variant="card" className="p-6 relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-colors" />
-            <div className="flex items-center gap-4 mb-4 relative z-10">
-              <div className="p-3 bg-primary/15 text-primary rounded-2xl">
-                <HeartPulse className="h-6 w-6" />
-              </div>
-              <h3 className="font-semibold text-muted-foreground">Health Score</h3>
-            </div>
-            <div className="relative z-10 flex items-end">
-              <span className="text-4xl font-display font-bold text-foreground">{data.healthScore}</span>
-              <span className="text-muted-foreground ml-2 mb-1">/ 100</span>
-            </div>
-          </Glass>
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <Glass variant="card" className="p-6 relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-info/10 rounded-full blur-2xl group-hover:bg-info/20 transition-colors" />
-            <div className="flex items-center gap-4 mb-4 relative z-10">
-              <div className="p-3 bg-info/15 text-info rounded-2xl">
-                <Award className="h-6 w-6" />
-              </div>
-              <h3 className="font-semibold text-muted-foreground">Level</h3>
-            </div>
-            <div className="relative z-10">
-              <span className="text-4xl font-display font-bold text-foreground">{data.level}</span>
-            </div>
+          <Glass variant="card" className="p-6 relative overflow-hidden group h-full">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-warning/10 rounded-full blur-2xl transition-colors" />
+            <h3 className="font-semibold text-muted-foreground flex items-center gap-2 mb-2">
+              <Zap className="h-5 w-5 text-warning" /> Daily Motivation
+            </h3>
+            <p className="text-xl font-display font-medium text-foreground italic">"{data.dailyMotivation}"</p>
           </Glass>
         </motion.div>
       </div>
@@ -176,6 +145,36 @@ export function Dashboard() {
           </Glass>
         </motion.div>
       </div>
+    </motion.div>
+  )
+}
+
+interface MetricCardProps {
+  title: string;
+  value: string | number;
+  icon: React.ReactNode;
+  color: string;
+  bg: string;
+}
+
+function MetricCard({ title, value, icon, color, bg }: MetricCardProps) {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      <Glass variant="card" className="p-5 relative overflow-hidden group h-full flex flex-col justify-between">
+        <div className={`absolute -right-4 -top-4 w-24 h-24 ${bg}/10 rounded-full blur-2xl group-hover:${bg}/20 transition-colors`} />
+        <div className="flex items-center gap-3 mb-3 relative z-10">
+          <div className={`p-2 ${bg}/15 ${color} rounded-xl`}>
+            {icon}
+          </div>
+          <h3 className="font-semibold text-sm text-muted-foreground whitespace-nowrap">{title}</h3>
+        </div>
+        <div className="relative z-10">
+          <span className="text-2xl lg:text-3xl font-display font-bold text-foreground">{value}</span>
+        </div>
+      </Glass>
     </motion.div>
   )
 }
