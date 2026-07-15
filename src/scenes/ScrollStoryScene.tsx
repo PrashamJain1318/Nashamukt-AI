@@ -469,7 +469,7 @@ function AIDataNetwork() {
   const nodesRef = useRef<THREE.InstancedMesh>(null!)
   const timeRef = useRef(0)
 
-  const nodes = useMemo(() => Array.from({ length: 18 }, (_, i) => ({
+  const nodes = useMemo(() => Array.from({ length: 18 }, (_) => ({
     pos: new THREE.Vector3(
       (Math.random() - 0.5) * 5,
       (Math.random() - 0.5) * 3,

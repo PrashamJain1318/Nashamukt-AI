@@ -94,3 +94,66 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .hologram-grid {
+    background-size: 40px 40px;
+    background-image: 
+      linear-gradient(to right, rgba(6, 182, 212, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(6, 182, 212, 0.03) 1px, transparent 1px);
+  }
+  
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.15), inset 0 0 15px rgba(6, 182, 212, 0.05);
+    border-color: rgba(6, 182, 212, 0.3) !important;
+  }
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.15), inset 0 0 15px rgba(168, 85, 247, 0.05);
+    border-color: rgba(168, 85, 247, 0.3) !important;
+  }
+  .glow-emerald {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.15), inset 0 0 15px rgba(16, 185, 129, 0.05);
+    border-color: rgba(16, 185, 129, 0.3) !important;
+  }
+  .glow-orange {
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.15), inset 0 0 15px rgba(249, 115, 22, 0.05);
+    border-color: rgba(249, 115, 22, 0.3) !important;
+  }
+  
+  @keyframes hologram-flicker {
+    0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+      opacity: 0.99;
+      filter: hue-rotate(0deg) saturate(1);
+    }
+    20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+      opacity: 0.85;
+      filter: hue-rotate(5deg) saturate(1.2);
+    }
+  }
+  
+  .animate-holo-flicker {
+    animation: hologram-flicker 6s infinite;
+  }
+  
+  @keyframes scanline-roll {
+    0% {
+      transform: translateY(-100%);
+    }
+    100% {
+      transform: translateY(100vh);
+    }
+  }
+  
+  .scanline-line {
+    background: linear-gradient(
+      to bottom,
+      rgba(6, 182, 212, 0) 0%,
+      rgba(6, 182, 212, 0.05) 10%,
+      rgba(6, 182, 212, 0.15) 50%,
+      rgba(6, 182, 212, 0.05) 90%,
+      rgba(6, 182, 212, 0) 100%
+    );
+    animation: scanline-roll 12s linear infinite;
+  }
+}
+
