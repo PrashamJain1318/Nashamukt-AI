@@ -4,6 +4,7 @@ import { Layout } from '@/components/layout'
 import { ProtectedRoute } from '@/components/protected-route'
 import { DashboardLayout } from '@/components/ui/dashboard-layout'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
+import { EmergencyContact } from '@/components/ui/emergency-contact'
 
 // Lazy Load Pages
 const LandingPage = React.lazy(() => import('@/pages/landing').then(m => ({ default: m.LandingPage })))
@@ -24,11 +25,15 @@ const ProfilePage = React.lazy(() => import('@/pages/profile').then(m => ({ defa
 const SettingsPage = React.lazy(() => import('@/pages/settings').then(m => ({ default: m.SettingsPage })))
 const OnboardingPage = React.lazy(() => import('@/pages/onboarding').then(m => ({ default: m.OnboardingPage })))
 const PlanPage = React.lazy(() => import('@/pages/plan').then(m => ({ default: m.PlanPage })))
+const PublicProfilePage = React.lazy(() => import('@/pages/public-profile').then(m => ({ default: m.PublicProfilePage })))
+const AIInsightsPage = React.lazy(() => import('@/pages/ai-insights').then(m => ({ default: m.AIInsightsPage })))
+const StoryPage = React.lazy(() => import('@/pages/story').then(m => ({ default: m.StoryPage })))
 
 function App() {
   return (
     <BrowserRouter>
       <Suspense fallback={<LoadingSpinner />}>
+        <EmergencyContact />
         <Routes>
           <Route path="/" element={<Layout />}>
             {/* Public Routes */}
@@ -39,6 +44,8 @@ function App() {
             <Route path="verify-email" element={<VerifyEmailPage />} />
             <Route path="verify-otp" element={<VerifyOTPPage />} />
             <Route path="design" element={<DesignSystemPage />} />
+            <Route path="p/:userId" element={<PublicProfilePage />} />
+            <Route path="story" element={<StoryPage />} />
           </Route>
 
           {/* Protected Routes */}
@@ -53,6 +60,7 @@ function App() {
               <Route path="journal" element={<JournalPage />} />
               <Route path="savings" element={<MoneySavedPage />} />
               <Route path="health" element={<HealthTimelinePage />} />
+              <Route path="insights" element={<AIInsightsPage />} />
               <Route path="chat" element={<ChatInterface />} />
               <Route path="community" element={<CommunityPage />} />
               <Route path="profile" element={<ProfilePage />} />

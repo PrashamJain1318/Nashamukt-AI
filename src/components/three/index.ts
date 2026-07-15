@@ -1,0 +1,7 @@
+// Barrel export — import everything from '@/components/three'
+export { SceneWrapper } from './SceneWrapper'
+export { CameraController } from './CameraController'
+export { LightingSystem } from './LightingSystem'
+export { EnvironmentSystem } from './EnvironmentSystem'
+export { ParticleEngine } from './ParticleEngine'
+export { FloatingObject } from './FloatingObject'

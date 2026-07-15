@@ -37,8 +37,26 @@ const initialPosts = [
     comments: 5,
     isLiked: false,
     timestamp: "Yesterday"
+  },
+  {
+    id: 4,
+    author: { name: "David K.", avatar: "DK" },
+    streak: "🔥 240 Days",
+    content: "I reached 8 months today. This community is a lifesaver. Keep going everyone!",
+    likes: 210,
+    comments: 45,
+    isLiked: false,
+    timestamp: "2 days ago",
+    isMilestone: true
   }
 ]
+
+const communityStats = {
+  totalUsers: "12,450",
+  activeToday: "3,120",
+  totalMoneySaved: "₹45,20,000",
+  totalDaysSober: "145,600"
+}
 
 const leaderboard = [
   { name: "Sarah J.", streak: "365 Days", rank: 1 },
@@ -52,6 +70,7 @@ export function CommunityPage() {
   const [posts, setPosts] = useState(initialPosts)
   const [newPostContent, setNewPostContent] = useState("")
   const [filter, setFilter] = useState("All")
+  const [isAnonymous, setIsAnonymous] = useState(false)
 
   const handleLike = (id: number) => {
     setPosts(posts.map(post => {
@@ -71,17 +90,19 @@ export function CommunityPage() {
 
     const newPost = {
       id: Date.now(),
-      author: { name: "You", avatar: "ME" },
-      streak: "🔥 14 Days",
+      author: isAnonymous ? { name: "Anonymous", avatar: "👻" } : { name: "Prasham Jain", avatar: "PJ" },
+      streak: "🔥 45 Days",
       content: newPostContent,
       likes: 0,
       comments: 0,
       isLiked: false,
-      timestamp: "Just now"
+      timestamp: "Just now",
+      isMilestone: false
     }
 
     setPosts([newPost, ...posts])
     setNewPostContent("")
+    setIsAnonymous(false)
   }
 
   const containerVariants = {
@@ -124,9 +145,18 @@ export function CommunityPage() {
                   className="w-full bg-transparent resize-none border-none focus:ring-0 p-0 text-foreground placeholder:text-muted-foreground min-h-[80px]"
                 />
                 <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                  <div className="flex space-x-2 text-muted-foreground">
+                  <div className="flex space-x-2 text-muted-foreground items-center">
                     <button className="p-2 hover:bg-secondary/50 rounded-full transition-colors"><ImageIcon className="h-4 w-4" /></button>
                     <button className="p-2 hover:bg-secondary/50 rounded-full transition-colors"><Smile className="h-4 w-4" /></button>
+                    <label className="flex items-center gap-2 text-xs font-medium cursor-pointer ml-2">
+                      <input 
+                        type="checkbox" 
+                        checked={isAnonymous} 
+                        onChange={(e) => setIsAnonymous(e.target.checked)}
+                        className="rounded border-border bg-background text-primary focus:ring-primary h-3.5 w-3.5"
+                      />
+                      Post Anonymously
+                    </label>
                   </div>
                   <Button onClick={handlePost} disabled={!newPostContent.trim()} className="rounded-full px-6 flex items-center gap-2">
                     Post <Send className="h-4 w-4" />
@@ -154,11 +184,16 @@ export function CommunityPage() {
           <AnimatePresence>
             {posts.map((post) => (
               <motion.div key={post.id} variants={itemVariants} layout initial="hidden" animate="visible" exit={{ opacity: 0, y: -20 }}>
-                <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-border transition-colors">
+                <Card className={`bg-card/50 backdrop-blur-sm transition-colors border-border/50 hover:border-border ${post.isMilestone ? 'border-warning/50 shadow-[0_0_15px_rgba(var(--warning),0.1)]' : ''}`}>
                   <CardContent className="p-5">
+                    {post.isMilestone && (
+                      <div className="flex items-center gap-2 text-warning font-bold text-xs uppercase tracking-wider mb-4 bg-warning/10 w-fit px-3 py-1 rounded-full">
+                        <Medal className="h-3 w-3" /> Milestone Reached
+                      </div>
+                    )}
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full flex items-center justify-center bg-secondary text-secondary-foreground font-semibold shrink-0">
+                        <div className={`h-10 w-10 rounded-full flex items-center justify-center font-semibold shrink-0 ${post.author.name === 'Anonymous' ? 'bg-secondary/50 text-muted-foreground' : 'bg-secondary text-secondary-foreground'}`}>
                           {post.author.avatar}
                         </div>
                         <div>
@@ -199,6 +234,28 @@ export function CommunityPage() {
         {/* Sidebar */}
         <div className="w-full lg:w-80 space-y-6">
           
+          {/* Community Stats */}
+          <Glass variant="card" className="p-5 border-border/50">
+            <h3 className="font-semibold text-lg flex items-center mb-4">
+              <Heart className="h-5 w-5 mr-2 text-destructive" />
+              Community Impact
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-secondary/30 p-3 rounded-xl text-center">
+                <span className="block text-2xl font-bold text-primary">{communityStats.activeToday}</span>
+                <span className="text-xs text-muted-foreground">Active Today</span>
+              </div>
+              <div className="bg-secondary/30 p-3 rounded-xl text-center">
+                <span className="block text-2xl font-bold text-success">{communityStats.totalMoneySaved}</span>
+                <span className="text-xs text-muted-foreground">Combined Saved</span>
+              </div>
+              <div className="col-span-2 bg-secondary/30 p-3 rounded-xl flex justify-between items-center">
+                <span className="text-sm font-semibold">Total Days Sober</span>
+                <span className="font-bold text-warning">{communityStats.totalDaysSober}</span>
+              </div>
+            </div>
+          </Glass>
+
           {/* Leaderboard */}
           <Glass variant="card" className="p-5 border-border/50 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">

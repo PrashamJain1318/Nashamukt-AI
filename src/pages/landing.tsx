@@ -1,12 +1,16 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
+import { Suspense, lazy } from 'react'
 
 import { Shield, Brain, HeartPulse, Activity, MessageSquare, TrendingUp, Sparkles, Star, Download, ChevronRight, CheckCircle2, ChevronDown, Quote } from 'lucide-react'
 import { AnimatedCounter } from '@/components/ui/animated-counter'
 import { Glass } from '@/components/ui/glass'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
+
+// Lazy-load heavy 3D scenes — they won't block the initial paint
+const TransformationHeroScene = lazy(() => import('@/scenes/TransformationHeroScene').then(m => ({ default: m.TransformationHeroScene })))
 
 export function LandingPage() {
   return (
@@ -27,80 +31,117 @@ export function LandingPage() {
 // 1. HERO SECTION
 function HeroSection() {
   return (
-    <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-4 flex justify-center items-center overflow-hidden">
-      {/* Background gradients */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/20 blur-[120px] rounded-full pointer-events-none opacity-50 dark:opacity-20" />
-      
-      <div className="max-w-5xl mx-auto text-center relative z-10">
-        <motion.div 
-          initial={{ scale: 0.9, opacity: 0 }}
+    <section className="relative flex flex-col items-center justify-end overflow-hidden bg-background" style={{ minHeight: '100svh' }}>
+      {/* ── FULL VIEWPORT 3D SCENE ── */}
+      <Suspense fallback={
+        // CSS fallback while 3D loads
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
+      }>
+        <TransformationHeroScene />
+      </Suspense>
+
+      {/* Subtle vignette overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-background/90 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/50 via-transparent to-background/50 pointer-events-none" />
+
+      {/* ── CENTERED TEXT OVERLAY ── */}
+      <div className="relative z-10 w-full max-w-4xl mx-auto px-4 pb-16 md:pb-24 text-center">
+        {/* Badge */}
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full bg-secondary border border-border/50 text-sm font-medium"
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-secondary/80 backdrop-blur-sm border border-border/50 text-sm font-medium"
         >
           <Sparkles className="h-4 w-4 text-primary" />
           <span>The Future of Addiction Recovery</span>
         </motion.div>
 
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
+        {/* Headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-6xl md:text-8xl font-display font-extrabold tracking-tight mb-8 leading-[1.1]"
+          transition={{ duration: 0.8, delay: 0.35 }}
+          className="text-5xl md:text-7xl font-display font-extrabold tracking-tight mb-6 leading-[1.1]"
         >
-          Reclaim Your Life <br className="hidden md:block" />
-          with <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">NashaMukt AI</span>
+          Reclaim Your Life{' '}
+          <br className="hidden md:block" />
+          with{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-violet-400 to-blue-400">
+            NashaMukt AI
+          </span>
         </motion.h1>
 
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
+        {/* Subtext */}
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed font-light"
+          transition={{ duration: 0.7, delay: 0.5 }}
+          className="text-lg md:text-xl text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed font-light"
         >
-          The most advanced AI companion designed to help you break free from smoking, alcohol, and tobacco.
+          AI-powered companion to break free from smoking, alcohol &amp; tobacco.
+          Your transformation starts now.
         </motion.p>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+        {/* CTAs */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
+          transition={{ duration: 0.7, delay: 0.65 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Link to="/register" className="w-full sm:w-auto">
-            <Button size="lg" className="w-full sm:w-auto h-14 px-8 text-lg rounded-full shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-300">
+            <Button
+              size="lg"
+              className="w-full sm:w-auto h-14 px-10 text-base rounded-full shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-all duration-300 font-semibold"
+            >
               Start Free Trial <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
           <Link to="/chat" className="w-full sm:w-auto">
-            <Button variant="secondary" size="lg" className="w-full sm:w-auto h-14 px-8 text-lg rounded-full bg-background/50 backdrop-blur-sm border-border/50 hover:bg-secondary transition-all">
+            <Button
+              variant="secondary"
+              size="lg"
+              className="w-full sm:w-auto h-14 px-10 text-base rounded-full bg-background/60 backdrop-blur-md border border-border/60 hover:bg-secondary/80 transition-all font-semibold"
+            >
               Try AI Coach
             </Button>
           </Link>
-        </motion.div>
-
-        {/* Hero Stats */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.6 }}
-          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto border-t border-border/40 pt-10"
-        >
-          {[
-            { value: 50000, suffix: "+", label: "Active Users" },
-            { value: 120, suffix: "k", label: "Cravings Beaten" },
-            { value: 94, suffix: "%", label: "Success Rate" },
-            { value: 24, suffix: "/7", label: "AI Support" },
-          ].map((stat, i) => (
-            <div key={i} className="text-center space-y-2">
-              <h3 className="text-3xl md:text-4xl font-bold text-foreground">
-                <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-              </h3>
-              <p className="text-sm text-muted-foreground font-medium uppercase tracking-wider">{stat.label}</p>
-            </div>
-          ))}
+          <Link to="/story" className="w-full sm:w-auto">
+            <Button
+              variant="ghost"
+              size="lg"
+              className="w-full sm:w-auto h-14 px-8 text-base rounded-full border border-white/20 hover:bg-white/10 hover:border-white/40 transition-all font-medium text-white/80 backdrop-blur-sm"
+            >
+              ✨ Watch the Journey
+            </Button>
+          </Link>
         </motion.div>
       </div>
+
+      {/* ── STATS BAR (pinned at bottom of 3D area) ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.9 }}
+        className="relative z-10 w-full border-t border-border/30 bg-background/70 backdrop-blur-lg"
+      >
+        <div className="max-w-4xl mx-auto px-4 py-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+          {[
+            { value: 50000, suffix: '+', label: 'Active Users' },
+            { value: 120, suffix: 'k', label: 'Cravings Beaten' },
+            { value: 94, suffix: '%', label: 'Success Rate' },
+            { value: 24, suffix: '/7', label: 'AI Support' },
+          ].map((stat, i) => (
+            <div key={i} className="text-center space-y-1">
+              <h3 className="text-2xl md:text-3xl font-bold text-foreground">
+                <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+              </h3>
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </motion.div>
     </section>
   )
 }

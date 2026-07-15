@@ -1,32 +1,16 @@
 import { motion } from 'framer-motion'
-import { User, Settings, Award, Calendar, Flame, Wallet, CheckCircle, Target, Lock, Activity } from 'lucide-react'
+import { User, Settings, Award, Calendar, Flame, Wallet, CheckCircle, Target, Lock, Zap, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Glass } from '@/components/ui/glass'
-
-const stats = [
-  { label: "Total Days Sober", value: "45", icon: Calendar, color: "text-primary" },
-  { label: "Longest Streak", value: "90", icon: Flame, color: "text-warning" },
-  { label: "Money Saved", value: "₹4,500", icon: Wallet, color: "text-success" },
-  { label: "Check-ins", value: "112", icon: CheckCircle, color: "text-info" },
-]
-
-const goals = [
-  "Run a half-marathon without losing breath.",
-  "Save enough money for a family vacation.",
-  "Be a healthy role model for my kids.",
-]
-
-const badges = [
-  { id: 1, name: "First Step", description: "Logged your first day.", icon: Award, unlocked: true },
-  { id: 2, name: "1 Week Clean", description: "Completed 7 days sober.", icon: Award, unlocked: true },
-  { id: 3, name: "1 Month Clean", description: "Completed 30 days sober.", icon: Award, unlocked: true },
-  { id: 4, name: "Piggy Bank", description: "Saved your first ₹1000.", icon: Wallet, unlocked: true },
-  { id: 5, name: "Half Year", description: "Completed 6 months sober.", icon: Calendar, unlocked: false },
-  { id: 6, name: "1 Year Clean", description: "Completed 365 days sober.", icon: Flame, unlocked: false },
-]
+import { Progress } from '@/components/ui/progress'
+import { useGamificationData, useCompleteMission } from '@/hooks/api/useGamification'
+import { Badge } from '@/components/ui/badge'
 
 export function ProfilePage() {
+  const { data, isLoading } = useGamificationData()
+  const completeMission = useCompleteMission()
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -36,6 +20,10 @@ export function ProfilePage() {
     hidden: { y: 20, opacity: 0 },
     visible: { y: 0, opacity: 1 }
   }
+
+  if (isLoading) return <div className="p-8 text-center animate-pulse">Loading Profile...</div>
+
+  const levelProgress = data ? (data.xp / data.nextLevelXp) * 100 : 0;
 
   return (
     <motion.div 
@@ -59,65 +47,84 @@ export function ProfilePage() {
             <User className="h-12 w-12 md:h-16 md:w-16" />
           </div>
           
-          <div className="flex-1 text-center md:text-left relative z-10">
-            <h2 className="text-2xl md:text-3xl font-bold mb-1">Prasham Jain</h2>
-            <p className="text-muted-foreground mb-4">Joined October 2023</p>
-            <div className="flex flex-wrap justify-center md:justify-start gap-3">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-warning/15 text-warning">
-                🔥 45 Day Streak
-              </span>
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-success/15 text-success">
-                🏆 Level 5
-              </span>
+          <div className="flex-1 text-center md:text-left relative z-10 w-full">
+            <div className="flex flex-col md:flex-row justify-between items-center md:items-start mb-4">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-bold mb-1 flex items-center justify-center md:justify-start gap-2">
+                  Prasham Jain <Badge className="bg-primary/20 text-primary border-primary/30">Lvl {data?.level}</Badge>
+                </h2>
+                <p className="text-muted-foreground">Joined October 2023</p>
+              </div>
+              <Button variant="ghost" size="sm" className="hidden md:flex mt-4 md:mt-0">
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
+              </Button>
+            </div>
+            
+            {/* XP Progress Bar */}
+            <div className="space-y-2 mt-4 max-w-md mx-auto md:mx-0">
+              <div className="flex justify-between text-sm font-semibold">
+                <span className="text-warning flex items-center"><Star className="h-4 w-4 mr-1 fill-warning" /> {data?.xp} XP</span>
+                <span className="text-muted-foreground">{data?.nextLevelXp} XP</span>
+              </div>
+              <Progress value={levelProgress} className="h-3 bg-secondary" indicatorColor="bg-warning" />
+              <p className="text-xs text-muted-foreground text-right">{(data?.nextLevelXp || 0) - (data?.xp || 0)} XP to Next Level</p>
             </div>
           </div>
-
-          <Button variant="secondary" className="relative z-10 mt-4 md:mt-0 w-full md:w-auto">
-            <Settings className="h-4 w-4 mr-2" />
-            Settings
-          </Button>
         </Glass>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Statistics */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        {/* Missions & Challenges */}
         <motion.div variants={itemVariants} className="space-y-4">
           <h3 className="text-xl font-bold font-display flex items-center">
-            <Activity className="h-5 w-5 mr-2 text-primary" />
-            Lifetime Statistics
+            <Zap className="h-5 w-5 mr-2 text-warning" />
+            Active Quests
           </h3>
-          <div className="grid grid-cols-2 gap-4">
-            {stats.map((stat, i) => (
-              <Glass key={i} variant="card" className="p-4 border-border/50 text-center flex flex-col items-center justify-center">
-                <stat.icon className={`h-8 w-8 mb-3 ${stat.color} opacity-80`} />
-                <span className="text-2xl font-bold mb-1">{stat.value}</span>
-                <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{stat.label}</span>
-              </Glass>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Goals */}
-        <motion.div variants={itemVariants} className="space-y-4">
-          <h3 className="text-xl font-bold font-display flex items-center">
-            <Target className="h-5 w-5 mr-2 text-primary" />
-            My Quit Goals
-          </h3>
-          <Glass variant="card" className="p-6 border-border/50 h-[calc(100%-2.5rem)]">
-            <ul className="space-y-4">
-              {goals.map((goal, i) => (
-                <li key={i} className="flex items-start">
-                  <div className="h-6 w-6 rounded-full bg-primary/20 text-primary flex items-center justify-center shrink-0 mr-4 mt-0.5">
-                    <span className="text-xs font-bold">{i + 1}</span>
+          <div className="space-y-4">
+            <Glass variant="card" className="p-5 border-border/50">
+              <h4 className="text-sm tracking-wider uppercase text-muted-foreground font-semibold mb-4">Daily Missions</h4>
+              <div className="space-y-3">
+                {data?.missions.map((mission: { id: number; type: string; title: string; xp: number; completed: boolean }) => (
+                  <div key={mission.id} className="flex items-center justify-between p-3 rounded-xl bg-secondary/30">
+                    <div className="flex items-center gap-3">
+                      <div className={`h-8 w-8 rounded-full flex items-center justify-center ${mission.completed ? 'bg-success/20 text-success' : 'bg-secondary text-muted-foreground'}`}>
+                        {mission.completed ? <CheckCircle className="h-4 w-4" /> : <Target className="h-4 w-4" />}
+                      </div>
+                      <span className={`font-medium ${mission.completed ? 'line-through text-muted-foreground' : ''}`}>{mission.title}</span>
+                    </div>
+                    {!mission.completed ? (
+                      <Button size="sm" variant="secondary" className="h-8 text-xs font-bold text-warning" onClick={() => completeMission.mutate({ id: mission.id, xp: mission.xp })}>
+                        +{mission.xp} XP
+                      </Button>
+                    ) : (
+                      <span className="text-xs font-bold text-success px-2">Completed</span>
+                    )}
                   </div>
-                  <p className="text-foreground/90 font-medium leading-relaxed">{goal}</p>
-                </li>
-              ))}
-            </ul>
-            <Button variant="ghost" className="w-full mt-6 text-sm text-primary">
-              + Edit Goals
-            </Button>
-          </Glass>
+                ))}
+              </div>
+            </Glass>
+
+            <Glass variant="card" className="p-5 border-border/50">
+              <h4 className="text-sm tracking-wider uppercase text-muted-foreground font-semibold mb-4">Weekly Challenges</h4>
+              <div className="space-y-4">
+                {data?.challenges.map((challenge: { id: number; title: string; xp: number; progress: number; total: number }) => (
+                  <div key={challenge.id} className="space-y-2">
+                    <div className="flex justify-between text-sm font-medium">
+                      <span>{challenge.title}</span>
+                      <span className="text-warning font-bold">+{challenge.xp} XP</span>
+                    </div>
+                    <Progress value={(challenge.progress / challenge.total) * 100} className="h-2 bg-secondary" indicatorColor="bg-primary" />
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>{challenge.progress} / {challenge.total}</span>
+                      <span>{(challenge.progress / challenge.total * 100).toFixed(0)}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Glass>
+          </div>
         </motion.div>
       </div>
 
@@ -130,7 +137,9 @@ export function ProfilePage() {
         <Card className="bg-card/50 backdrop-blur-md border-border/50">
           <CardContent className="p-6">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
-              {badges.map((badge) => (
+              {data?.achievements.map((badge: { id: number; icon: string; unlocked: boolean; name: string; description: string }) => {
+                const IconComponent = badge.icon === 'Award' ? Award : badge.icon === 'Wallet' ? Wallet : badge.icon === 'Calendar' ? Calendar : Flame
+                return (
                 <div key={badge.id} className="flex flex-col items-center text-center group">
                   <div className={`h-16 w-16 rounded-2xl flex items-center justify-center mb-3 transition-all duration-300 ${
                     badge.unlocked 
@@ -138,7 +147,7 @@ export function ProfilePage() {
                       : 'bg-secondary border-2 border-border/50 grayscale opacity-50'
                   }`}>
                     {badge.unlocked ? (
-                      <badge.icon className="h-8 w-8 text-warning drop-shadow-md" />
+                      <IconComponent className="h-8 w-8 text-warning drop-shadow-md" />
                     ) : (
                       <Lock className="h-6 w-6 text-muted-foreground" />
                     )}
@@ -150,7 +159,7 @@ export function ProfilePage() {
                     {badge.description}
                   </span>
                 </div>
-              ))}
+              )})}
             </div>
           </CardContent>
         </Card>

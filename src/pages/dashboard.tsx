@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense, lazy } from 'react'
 import { motion, Variants } from "framer-motion"
 import { Activity, Flame, Wallet, HeartPulse, Award, ChevronRight, Calendar, Target, Zap, Star } from 'lucide-react'
 import { useDashboardData } from '@/hooks/api/useDashboard'
@@ -6,7 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Glass } from "@/components/ui/glass"
 import { ProgressChart } from "@/components/ui/chart"
+import { QRCodeModal } from '@/components/ui/qr-code-modal'
 import { ResponsiveContainer, BarChart } from "recharts"
+
+// Lazy-load 3D background so it never blocks dashboard render
+const DashboardScene = lazy(() => import('@/scenes/DashboardScene').then(m => ({ default: m.DashboardScene })))
 
 export function Dashboard() {
   const { data, isLoading, isError } = useDashboardData()
@@ -54,20 +58,29 @@ export function Dashboard() {
   }
 
   return (
-    <motion.div 
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="w-full max-w-6xl mx-auto py-6"
-    >
+    <>
+      {/* Ambient 3D particle background */}
+      <Suspense fallback={null}>
+        <DashboardScene />
+      </Suspense>
+
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="w-full max-w-6xl mx-auto py-6 relative z-10"
+      >
       <div className="flex justify-between items-end mb-8">
         <div>
           <h1 className="font-display text-3xl font-bold mb-2">Welcome back, Prasham</h1>
           <p className="text-muted-foreground">You are doing great. Keep the momentum going!</p>
         </div>
-        <Button className="hidden sm:flex rounded-full px-6 shadow-glow transition-transform hover:scale-105 active:scale-95">
-          <Activity className="mr-2 h-4 w-4" /> Daily Check-in
-        </Button>
+        <div className="flex items-center space-x-4">
+          <QRCodeModal />
+          <Button className="hidden sm:flex rounded-full px-6 shadow-glow transition-transform hover:scale-105 active:scale-95">
+            <Activity className="mr-2 h-4 w-4" /> Daily Check-in
+          </Button>
+        </div>
       </div>
 
       {/* Top 5 Metrics Row */}
@@ -80,7 +93,7 @@ export function Dashboard() {
       </div>
 
       {/* Goal & Motivation Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
         <motion.div variants={itemVariants}>
           <Glass variant="card" className="p-6 relative overflow-hidden group h-full">
             <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl transition-colors" />
@@ -98,6 +111,18 @@ export function Dashboard() {
               <Zap className="h-5 w-5 text-warning" /> Daily Motivation
             </h3>
             <p className="text-xl font-display font-medium text-foreground italic">"{data.dailyMotivation}"</p>
+          </Glass>
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <Glass variant="card" className="p-6 relative overflow-hidden group h-full">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-info/10 rounded-full blur-2xl transition-colors" />
+            <h3 className="font-semibold text-muted-foreground flex items-center gap-2 mb-2">
+              <HeartPulse className="h-5 w-5 text-info" /> Daily Health Tip
+            </h3>
+            <p className="text-xl font-display font-medium text-foreground">
+              Drink at least 8 glasses of water today to flush out toxins faster.
+            </p>
           </Glass>
         </motion.div>
       </div>
@@ -146,6 +171,7 @@ export function Dashboard() {
         </motion.div>
       </div>
     </motion.div>
+    </>
   )
 }
 

@@ -14,7 +14,8 @@ import {
   Wallet,
   HeartPulse,
   BookOpen,
-  User
+  User,
+  Sparkles
 } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
 import { useTheme } from "@/components/theme-provider"
@@ -22,6 +23,7 @@ import { Button } from "@/components/ui/button"
 import { Toaster } from "sonner"
 import { cn } from "@/lib/utils"
 import { CravingAssistant } from "./craving-assistant"
+import { AccessibilityMenu } from "./accessibility-menu"
 
 export function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -36,6 +38,7 @@ export function DashboardLayout() {
     { name: "Journal", href: "/journal", icon: BookOpen },
     { name: "Savings", href: "/savings", icon: Wallet },
     { name: "Health", href: "/health", icon: HeartPulse },
+    { name: "Insights", href: "/insights", icon: Sparkles },
     { name: "AI Support", href: "/chat", icon: MessageSquare },
     { name: "Community", href: "/community", icon: Users },
     { name: "Profile", href: "/profile", icon: User },
@@ -137,6 +140,7 @@ export function DashboardLayout() {
           </div>
           
           <div className="flex items-center space-x-2 md:space-x-4">
+            <AccessibilityMenu />
             <Button
               variant="ghost"
               size="icon"

@@ -211,4 +211,40 @@ mock.onGet('/health').reply(() => {
   }]
 })
 
+// Gamification API
+mock.onGet('/gamification').reply(() => {
+  return [200, {
+    level: 5,
+    xp: dashboardData.xp,
+    nextLevelXp: 3000,
+    missions: [
+      { id: 1, type: 'daily', title: "Daily Check-in", xp: 50, completed: true },
+      { id: 2, type: 'daily', title: "Drink 2L Water", xp: 20, completed: false },
+      { id: 3, type: 'daily', title: "Complete 4-7-8 Breathing", xp: 30, completed: false },
+    ],
+    challenges: [
+      { id: 4, type: 'weekly', title: "7-Day Perfect Streak", xp: 500, progress: 4, total: 7 },
+      { id: 5, type: 'weekly', title: "Save ₹500", xp: 200, progress: 350, total: 500 },
+    ],
+    achievements: [
+      { id: 1, name: "First Step", description: "Logged your first day.", icon: "Award", unlocked: true },
+      { id: 2, name: "1 Week Clean", description: "Completed 7 days sober.", icon: "Award", unlocked: true },
+      { id: 3, name: "1 Month Clean", description: "Completed 30 days sober.", icon: "Award", unlocked: true },
+      { id: 4, name: "Piggy Bank", description: "Saved your first ₹1000.", icon: "Wallet", unlocked: true },
+      { id: 5, name: "Half Year", description: "Completed 6 months sober.", icon: "Calendar", unlocked: false },
+      { id: 6, name: "1 Year Clean", description: "Completed 365 days sober.", icon: "Flame", unlocked: false },
+    ]
+  }]
+})
+
+mock.onPost('/gamification/mission').reply((config) => {
+  const data = JSON.parse(config.data)
+  
+  // Award XP
+  dashboardData.xp += data.xp
+  saveState('dashboard', dashboardData)
+  
+  return [200, { success: true, xpEarned: data.xp, newTotalXp: dashboardData.xp }]
+})
+
 export { mock };
