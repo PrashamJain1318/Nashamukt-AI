@@ -1,0 +1,62 @@
+import React, { Suspense } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Layout } from '@/components/layout'
+import { ProtectedRoute } from '@/components/protected-route'
+import { DashboardLayout } from '@/components/ui/dashboard-layout'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
+
+// Lazy Load Pages
+const LandingPage = React.lazy(() => import('@/pages/landing').then(m => ({ default: m.LandingPage })))
+const Dashboard = React.lazy(() => import('@/pages/dashboard').then(m => ({ default: m.Dashboard })))
+const ChatInterface = React.lazy(() => import('@/pages/chat').then(m => ({ default: m.ChatInterface })))
+const LoginPage = React.lazy(() => import('@/pages/auth/login').then(m => ({ default: m.LoginPage })))
+const RegisterPage = React.lazy(() => import('@/pages/auth/register').then(m => ({ default: m.RegisterPage })))
+const ForgotPasswordPage = React.lazy(() => import('@/pages/auth/forgot-password').then(m => ({ default: m.ForgotPasswordPage })))
+const VerifyEmailPage = React.lazy(() => import('@/pages/auth/verify-email').then(m => ({ default: m.VerifyEmailPage })))
+const VerifyOTPPage = React.lazy(() => import('@/pages/auth/verify-otp').then(m => ({ default: m.VerifyOTPPage })))
+const DesignSystemPage = React.lazy(() => import('@/pages/design-system').then(m => ({ default: m.DesignSystemPage })))
+const TrackerPage = React.lazy(() => import('@/pages/tracker').then(m => ({ default: m.TrackerPage })))
+const JournalPage = React.lazy(() => import('@/pages/journal').then(m => ({ default: m.JournalPage })))
+const MoneySavedPage = React.lazy(() => import('@/pages/savings').then(m => ({ default: m.MoneySavedPage })))
+const HealthTimelinePage = React.lazy(() => import('@/pages/health').then(m => ({ default: m.HealthTimelinePage })))
+const CommunityPage = React.lazy(() => import('@/pages/community').then(m => ({ default: m.CommunityPage })))
+const ProfilePage = React.lazy(() => import('@/pages/profile').then(m => ({ default: m.ProfilePage })))
+const SettingsPage = React.lazy(() => import('@/pages/settings').then(m => ({ default: m.SettingsPage })))
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            {/* Public Routes */}
+            <Route index element={<LandingPage />} />
+            <Route path="login" element={<LoginPage />} />
+            <Route path="register" element={<RegisterPage />} />
+            <Route path="forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="verify-email" element={<VerifyEmailPage />} />
+            <Route path="verify-otp" element={<VerifyOTPPage />} />
+            <Route path="design" element={<DesignSystemPage />} />
+          </Route>
+
+          {/* Protected Dashboard Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="tracker" element={<TrackerPage />} />
+              <Route path="journal" element={<JournalPage />} />
+              <Route path="savings" element={<MoneySavedPage />} />
+              <Route path="health" element={<HealthTimelinePage />} />
+              <Route path="chat" element={<ChatInterface />} />
+              <Route path="community" element={<CommunityPage />} />
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="settings" element={<SettingsPage />} />
+            </Route>
+          </Route>
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
+  )
+}
+
+export default App

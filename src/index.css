@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #f8fafc;
+    --foreground: #0f172a;
+    
+    --card: #ffffff;
+    --card-foreground: #0f172a;
+    
+    --primary: #0ea5e9; /* Light Blue */
+    --primary-foreground: #ffffff;
+    --primary-hover: #0284c7;
+    
+    --secondary: #e2e8f0;
+    --secondary-foreground: #1e293b;
+    
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
+    
+    --border: #e2e8f0;
+    --input: #e2e8f0;
+    --ring: #0ea5e9;
+    
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    
+    --success: #10b981;
+    --success-foreground: #ffffff;
+    
+    --warning: #f59e0b;
+    --warning-foreground: #ffffff;
+    
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: #020817; /* Deep Navy/Black */
+    --foreground: #f8fafc;
+    
+    --card: rgba(30, 41, 59, 0.7);
+    --card-foreground: #f8fafc;
+    
+    --primary: #38bdf8;
+    --primary-foreground: #020817;
+    --primary-hover: #0ea5e9;
+    
+    --secondary: rgba(51, 65, 85, 0.5);
+    --secondary-foreground: #f8fafc;
+    
+    --muted: rgba(30, 41, 59, 0.5);
+    --muted-foreground: #94a3b8;
+    
+    --border: rgba(51, 65, 85, 0.5);
+    --input: rgba(51, 65, 85, 0.5);
+    --ring: #38bdf8;
+    
+    --destructive: #7f1d1d;
+    --destructive-foreground: #f8fafc;
+    
+    --success: #065f46;
+    --success-foreground: #f8fafc;
+    
+    --warning: #b45309;
+    --warning-foreground: #f8fafc;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased transition-colors duration-300;
+  }
+  ::selection {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+}
+
+/* Glassmorphism utilities */
+.glass {
+  @apply bg-white/70 dark:bg-slate-900/60 backdrop-blur-md border border-white/20 dark:border-slate-800/50 shadow-sm;
+}
+.glass-card {
+  @apply bg-card backdrop-blur-md border border-border shadow-sm;
+}
