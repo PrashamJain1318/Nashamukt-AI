@@ -7,9 +7,7 @@ import { AuthProvider } from '@/lib/auth-context'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from '@/lib/query-client'
 
-if (import.meta.env.DEV) {
-  import('./lib/mock-server')
-}
+import('./lib/mock-server')
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
