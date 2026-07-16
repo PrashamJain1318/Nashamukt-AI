@@ -150,19 +150,19 @@ export function TrackerPage() {
                     <option value="tobacco">Tobacco</option>
                     <option value="vaping">Vaping</option>
                   </select>
-                  {errors.substance && <p className="text-xs text-destructive">{errors.substance.message}</p>}
+                  {errors.substance && <p className="glass-error mt-2">{errors.substance.message}</p>}
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground">Quantity</label>
                     <Input type="number" {...register('quantity', { valueAsNumber: true })} />
-                    {errors.quantity && <p className="text-xs text-destructive">{errors.quantity.message}</p>}
+                    {errors.quantity && <p className="glass-error mt-2">{errors.quantity.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground">Time</label>
                     <Input type="time" {...register('time')} />
-                    {errors.time && <p className="text-xs text-destructive">{errors.time.message}</p>}
+                    {errors.time && <p className="glass-error mt-2">{errors.time.message}</p>}
                   </div>
                 </div>
 
@@ -179,7 +179,7 @@ export function TrackerPage() {
                     <option value="neutral">😐 Neutral</option>
                     <option value="happy">😊 Happy</option>
                   </select>
-                  {errors.mood && <p className="text-xs text-destructive">{errors.mood.message}</p>}
+                  {errors.mood && <p className="glass-error mt-2">{errors.mood.message}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -189,7 +189,7 @@ export function TrackerPage() {
                     placeholder="What triggered this?"
                     className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                   />
-                  {errors.reason && <p className="text-xs text-destructive">{errors.reason.message}</p>}
+                  {errors.reason && <p className="glass-error mt-2">{errors.reason.message}</p>}
                 </div>
 
                 <Button type="submit" variant="gradient" className="w-full" isLoading={logHabitMutation.isPending}>

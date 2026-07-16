@@ -134,12 +134,12 @@ export function OnboardingPage() {
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Name</label>
                       <Input placeholder="Your preferred name" {...register('name')} />
-                      {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+                      {errors.name && <p className="glass-error mt-2">{errors.name.message}</p>}
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Age</label>
                       <Input type="number" placeholder="e.g. 28" {...register('age')} />
-                      {errors.age && <p className="text-xs text-destructive">{errors.age.message}</p>}
+                      {errors.age && <p className="glass-error mt-2">{errors.age.message}</p>}
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Gender (Optional)</label>
@@ -148,7 +148,7 @@ export function OnboardingPage() {
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Preferred Language</label>
                       <Input placeholder="e.g. English, Hindi" {...register('preferredLanguage')} />
-                      {errors.preferredLanguage && <p className="text-xs text-destructive">{errors.preferredLanguage.message}</p>}
+                      {errors.preferredLanguage && <p className="glass-error mt-2">{errors.preferredLanguage.message}</p>}
                     </div>
                   </div>
                 </motion.div>
@@ -180,24 +180,24 @@ export function OnboardingPage() {
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Product(s) Used</label>
                       <Input placeholder="e.g. Cigarettes, Alcohol, Gutkha" {...register('productsUsed')} />
-                      {errors.productsUsed && <p className="text-xs text-destructive">{errors.productsUsed.message}</p>}
+                      {errors.productsUsed && <p className="glass-error mt-2">{errors.productsUsed.message}</p>}
                     </div>
                     
                     <div className="grid md:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Years Active</label>
                         <Input type="number" placeholder="Years" {...register('yearsOfAddiction')} />
-                        {errors.yearsOfAddiction && <p className="text-xs text-destructive">{errors.yearsOfAddiction.message}</p>}
+                        {errors.yearsOfAddiction && <p className="glass-error mt-2">{errors.yearsOfAddiction.message}</p>}
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Daily Quantity</label>
                         <Input type="number" placeholder="Amount" {...register('dailyQuantity')} />
-                        {errors.dailyQuantity && <p className="text-xs text-destructive">{errors.dailyQuantity.message}</p>}
+                        {errors.dailyQuantity && <p className="glass-error mt-2">{errors.dailyQuantity.message}</p>}
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Daily Cost (₹)</label>
                         <Input type="number" placeholder="Cost" {...register('dailySpending')} />
-                        {errors.dailySpending && <p className="text-xs text-destructive">{errors.dailySpending.message}</p>}
+                        {errors.dailySpending && <p className="glass-error mt-2">{errors.dailySpending.message}</p>}
                       </div>
                     </div>
                   </div>
@@ -230,12 +230,12 @@ export function OnboardingPage() {
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Main reason it started?</label>
                       <Input placeholder="e.g. Peer pressure, Stress from work" {...register('reasonForAddiction')} />
-                      {errors.reasonForAddiction && <p className="text-xs text-destructive">{errors.reasonForAddiction.message}</p>}
+                      {errors.reasonForAddiction && <p className="glass-error mt-2">{errors.reasonForAddiction.message}</p>}
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Main reason to quit now?</label>
                       <Input placeholder="e.g. For my family, Health concerns" {...register('reasonToQuit')} />
-                      {errors.reasonToQuit && <p className="text-xs text-destructive">{errors.reasonToQuit.message}</p>}
+                      {errors.reasonToQuit && <p className="glass-error mt-2">{errors.reasonToQuit.message}</p>}
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Target Quit Date</label>
@@ -243,7 +243,7 @@ export function OnboardingPage() {
                         <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input type="date" className="pl-10" {...register('targetQuitDate')} />
                       </div>
-                      {errors.targetQuitDate && <p className="text-xs text-destructive">{errors.targetQuitDate.message}</p>}
+                      {errors.targetQuitDate && <p className="glass-error mt-2">{errors.targetQuitDate.message}</p>}
                     </div>
                   </div>
                 </motion.div>

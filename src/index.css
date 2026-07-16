@@ -189,6 +189,43 @@
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 8px 16px rgba(0, 0, 0, 0.2);
   }
 
+  /* ── Premium multi-layered shadows ── */
+  .shadow-premium {
+    box-shadow: 0 8px 30px -8px rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  }
+  .dark .shadow-premium {
+    box-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.45), 0 1px 2px 0 rgba(255, 255, 255, 0.015);
+  }
+
+  .shadow-glow {
+    box-shadow: 0 0 20px 0 rgba(37, 99, 235, 0.06);
+  }
+  .dark .shadow-glow {
+    box-shadow: 0 0 25px 0 rgba(0, 242, 254, 0.1);
+  }
+
+  /* ── Glass error alert bubble ── */
+  .glass-error {
+    background: rgba(239, 68, 68, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(239, 68, 68, 0.18);
+    border-left: 3.5px solid rgba(239, 68, 68, 0.85);
+    color: hsl(var(--foreground));
+    padding: 0.65rem 0.95rem;
+    border-radius: 0.5rem;
+    font-size: 0.825rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(-12px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
   /* ── Glow utilities ── */
   .hologram-grid {
     background-size: 40px 40px;
