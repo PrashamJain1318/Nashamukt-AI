@@ -9,98 +9,116 @@ const vertexShader = `
   uniform float uTime;
   uniform float uNoiseStrength;
   uniform float uNoiseFrequency;
+  uniform float uNoiseSpeed;
   uniform vec2 uMouse;
   varying vec3 vNormal;
   varying vec3 vPosition;
   varying vec3 vViewPosition;
 
-  // Classic Perlin 3D Noise by Stefan Gustavson
-  vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
-  vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
-  vec3 fade(vec3 t) {return t*t*t*(t*(t*6.0-15.0)+10.0);}
+  // Description : Array and textureless GLSL 2D/3D/4D simplex 
+  //               noise functions.
+  //      Author : Ian McEwan, Ashima Arts.
+  //  Maintainer : stegu
+  //     Lastmod : 20110822 (ijm)
+  //     License : Copyright (C) 2011 Ashima Arts. All rights reserved.
+  //               Distributed under the MIT License. See LICENSE file.
+  //               https://github.com/ashima/webgl-noise
+  //               https://github.com/stegu/webgl-noise
 
-  float cnoise(vec3 P){
-    vec3 Pi0 = floor(P);
-    vec3 Pi1 = Pi0 + vec3(1.0);
-    Pi0 = mod(Pi0, 289.0);
-    Pi1 = mod(Pi1, 289.0);
-    vec3 Pf0 = fract(P);
-    vec3 Pf1 = Pf0 - vec3(1.0);
-    vec4 ix = vec4(Pi0.x, Pi1.x, Pi0.x, Pi1.x);
-    vec4 iy = vec4(Pi0.yy, Pi1.yy);
-    vec4 iz0 = Pi0.zzzz;
-    vec4 iz1 = Pi1.zzzz;
+  vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+  vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+  vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
+  vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
 
-    vec4 ixy = permute(permute(ix) + iy);
-    vec4 ixy0 = permute(ixy + iz0);
-    vec4 ixy1 = permute(ixy + iz1);
+  float snoise(vec3 v) {
+    const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+    const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
 
-    vec4 gx0 = ixy0 / 7.0;
-    vec4 gy0 = fract(floor(gx0) / 7.0) - 0.5;
-    gx0 = fract(gx0);
-    vec4 gz0 = vec4(0.5) - abs(gx0) - abs(gy0);
-    vec4 sz0 = step(gz0, vec4(0.0));
-    gx0 -= sz0 * (step(0.0, gx0) - 0.5);
-    gy0 -= sz0 * (step(0.0, gy0) - 0.5);
+    // First corner
+    vec3 i  = floor(v + dot(v, C.yyy));
+    vec3 x0 = v - i + dot(i, C.xxx);
 
-    vec4 gx1 = ixy1 / 7.0;
-    vec4 gy1 = fract(floor(gx1) / 7.0) - 0.5;
-    gx1 = fract(gx1);
-    vec4 gz1 = vec4(0.5) - abs(gx1) - abs(gy1);
-    vec4 sz1 = step(gz1, vec4(0.0));
-    gx1 -= sz1 * (step(0.0, gx1) - 0.5);
-    gy1 -= sz1 * (step(0.0, gy1) - 0.5);
+    // Other corners
+    vec3 g = step(x0.yzx, x0.xyz);
+    vec3 l = 1.0 - g;
+    vec3 i1 = min(g.xyz, l.zxy);
+    vec3 i2 = max(g.xyz, l.zxy);
 
-    vec3 g000 = vec3(gx0.x,gy0.x,gz0.x);
-    vec3 g100 = vec3(gx0.y,gy0.y,gz0.y);
-    vec3 g010 = vec3(gx0.z,gy0.z,gz0.z);
-    vec3 g110 = vec3(gx0.w,gy0.w,gz0.w);
-    vec3 g001 = vec3(gx1.x,gy1.x,gz1.x);
-    vec3 g101 = vec3(gx1.y,gy1.y,gz1.y);
-    vec3 g011 = vec3(gx1.z,gy1.z,gz1.z);
-    vec3 g111 = vec3(gx1.w,gy1.w,gz1.w);
+    //   x0 = x0 - 0.0 + 0.0 * C.xxx;
+    //   x1 = x0 - i1  + 1.0 * C.xxx;
+    //   x2 = x0 - i2  + 2.0 * C.xxx;
+    //   x3 = x0 - 1.0 + 3.0 * C.xxx;
+    vec3 x1 = x0 - i1 + C.xxx;
+    vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.xxx = C.yyy
+    vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.xxx = -0.5 = -D.yyy
 
-    vec4 norm0 = taylorInvSqrt(vec4(dot(g000, g000), dot(g100, g100), dot(g010, g010), dot(g110, g110)));
-    g000 *= norm0.x;
-    g100 *= norm0.y;
-    g010 *= norm0.z;
-    g110 *= norm0.w;
-    vec4 norm1 = taylorInvSqrt(vec4(dot(g001, g001), dot(g101, g101), dot(g011, g011), dot(g111, g111)));
-    g001 *= norm1.x;
-    g101 *= norm1.y;
-    g011 *= norm1.z;
-    g111 *= norm1.w;
+    // Permutations
+    i = mod289(i);
+    vec4 p = permute(permute(permute(
+               i.z + vec4(0.0, i1.z, i2.z, 1.0))
+             + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+             + i.x + vec4(0.0, i1.x, i2.x, 1.0));
 
-    float n000 = dot(g000, Pf0);
-    float n100 = dot(g100, vec3(Pf1.x, Pf0.yz));
-    float n010 = dot(g010, vec3(Pf0.x, Pf1.y, Pf0.z));
-    float n110 = dot(g110, vec3(Pf1.xy, Pf0.z));
-    float n001 = dot(g001, vec3(Pf0.xy, Pf1.z));
-    float n101 = dot(g101, vec3(Pf1.x, Pf0.y, Pf1.z));
-    float n011 = dot(g011, vec3(Pf0.x, Pf1.yz));
-    float n111 = dot(g111, Pf1);
+    // Gradients: 7x7 points over a square, mapped onto an octahedron.
+    // The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)
+    float n_ = 0.142857142857; // 1.0/7.0
+    vec3 ns = n_ * D.wyz - D.xzx;
 
-    vec3 fade_xyz = fade(Pf0);
-    vec4 n_z = mix(vec4(n000, n100, n010, n110), vec4(n001, n101, n011, n111), fade_xyz.z);
-    vec2 n_yz = mix(n_z.xy, n_z.zw, fade_xyz.y);
-    float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x);
-    return 2.2 * n_xyz;
+    vec4 j = p - 49.0 * floor(p * ns.z); // mod(p,7*7)
+
+    vec4 x_ = floor(j * ns.z);
+    vec4 y_ = floor(j - 7.0 * x_); // mod(j,N)
+
+    vec4 x = x_ *ns.x + ns.yyyy;
+    vec4 y = y_ *ns.x + ns.yyyy;
+    vec4 h = 1.0 - abs(x) - abs(y);
+
+    vec4 b0 = vec4(x.xy, y.xy);
+    vec4 b1 = vec4(x.zw, y.zw);
+
+    vec4 s0 = floor(b0)*2.0 + 1.0;
+    vec4 s1 = floor(b1)*2.0 + 1.0;
+    vec4 sh = -step(h, vec4(0.0));
+
+    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+    vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+
+    vec3 p0 = vec3(a0.xy, h.x);
+    vec3 p1 = vec3(a0.zw, h.y);
+    vec3 p2 = vec3(a1.xy, h.z);
+    vec3 p3 = vec3(a1.zw, h.w);
+
+    // Normalise gradients
+    vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+    p0 *= norm.x;
+    p1 *= norm.y;
+    p2 *= norm.z;
+    p3 *= norm.w;
+
+    // Mix final noise value
+    vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+    m = m * m;
+    return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1),
+                                 dot(p2,x2), dot(p3,x3)));
   }
 
   void main() {
     vNormal = normalize(normalMatrix * normal);
     
-    // Wave calculations using time and noise frequency
-    vec3 noisePos = position * uNoiseFrequency + vec3(0.0, uTime * 0.5, 0.0);
-    noisePos.xy += uMouse * 0.25;
+    // Smooth breathing periodic pulse
+    float breathing = sin(uTime * 1.3) * 0.04 + 0.98;
     
-    float noiseVal = cnoise(noisePos);
-    float displacement = noiseVal * uNoiseStrength;
+    // Wave displacement using time and simplex noise
+    vec3 noisePos = position * uNoiseFrequency + vec3(0.0, uTime * uNoiseSpeed, 0.0);
+    noisePos.xy += uMouse * 0.18;
     
-    vec3 newPosition = position + normal * displacement;
-    vec4 mvPosition = modelViewMatrix * vec4(newPosition, 1.0);
+    float noiseVal = snoise(noisePos);
+    float displacement = noiseVal * uNoiseStrength * breathing;
     
-    vPosition = newPosition;
+    vec3 displacedPosition = position * breathing + normal * displacement;
+    vec4 mvPosition = modelViewMatrix * vec4(displacedPosition, 1.0);
+    
+    vPosition = displacedPosition;
     vViewPosition = -mvPosition.xyz;
     gl_Position = projectionMatrix * mvPosition;
   }
@@ -109,6 +127,7 @@ const vertexShader = `
 const fragmentShader = `
   uniform vec3 uColor1;
   uniform vec3 uColor2;
+  uniform vec3 uColor3;
   uniform float uTime;
   uniform float uFresnelBias;
   uniform float uFresnelScale;
@@ -117,9 +136,17 @@ const fragmentShader = `
   varying vec3 vPosition;
   varying vec3 vViewPosition;
 
-  // Inigo Quilez color palette generator
-  vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d ) {
-    return a + b*cos( 6.28318*(c*t+d) );
+  // Thin-film interference thin dispersion colors
+  vec3 getVisionProIrid(float cosTheta) {
+    float theta = acos(cosTheta);
+    
+    // Vision Pro dynamic palette: soft rose-golds, custom cyans, glowing emeralds
+    float r = sin(theta * 2.8 + uTime * 0.35) * 0.38 + 0.62;
+    float g = sin(theta * 2.2 + uTime * 0.28 + 1.2) * 0.32 + 0.68;
+    float b = sin(theta * 1.8 + uTime * 0.22 + 2.4) * 0.38 + 0.62;
+    
+    vec3 color = vec3(r, g, b);
+    return mix(color, vec3(0.82, 0.68, 0.9), 0.25); // blend with premium silver/pink sheen
   }
 
   void main() {
@@ -127,32 +154,38 @@ const fragmentShader = `
     vec3 normal = normalize(vNormal);
     float ndotv = dot(normal, viewDir);
     
-    // Fresnel factor
+    // Fresnel transparency factor
     float fresnel = uFresnelBias + uFresnelScale * pow(1.0 - max(0.0, ndotv), uFresnelPower);
     fresnel = clamp(fresnel, 0.0, 1.0);
     
-    // iridescence shifting color index
-    float t = (1.0 - ndotv) * 0.65 + uTime * 0.07;
+    // Interior animated gradients (moving cloud flows inside the orb)
+    float flow1 = sin(vPosition.x * 2.2 + uTime * 0.5) * 0.5 + 0.5;
+    float flow2 = cos(vPosition.y * 1.8 - uTime * 0.3) * 0.5 + 0.5;
     
-    // Pastel iridescent glass chromatic dispersion
-    vec3 iridColor = palette(
-      t,
-      vec3(0.5, 0.5, 0.5),
-      vec3(0.5, 0.5, 0.5),
-      vec3(1.0, 1.0, 1.0),
-      vec3(0.0, 0.33, 0.67)
-    );
+    vec3 volumeColor = mix(uColor1, uColor2, flow1);
+    volumeColor = mix(volumeColor, uColor3, flow2 * 0.45);
     
-    vec3 baseColor = mix(uColor1, uColor2, fresnel);
-    vec3 compositeColor = mix(baseColor, iridColor, 0.4);
+    // Iridescent outer shell reflection
+    vec3 iridColor = getVisionProIrid(max(0.0, ndotv));
     
-    // Specular highlight gloss
-    vec3 lightDir = normalize(vec3(3.0, 5.0, 2.0));
-    vec3 halfDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(normal, halfDir), 0.0), 64.0);
+    // Specular light coordinates
+    vec3 lightDir1 = normalize(vec3(4.0, 6.0, 3.0));
+    vec3 lightDir2 = normalize(vec3(-4.0, -2.0, 2.0));
     
-    vec3 finalColor = compositeColor + vec3(spec * 0.7);
-    gl_FragColor = vec4(finalColor, 0.3 + fresnel * 0.5);
+    vec3 halfDir1 = normalize(lightDir1 + viewDir);
+    vec3 halfDir2 = normalize(lightDir2 + viewDir);
+    
+    float spec1 = pow(max(dot(normal, halfDir1), 0.0), 128.0);
+    float spec2 = pow(max(dot(normal, halfDir2), 0.0), 64.0);
+    
+    // Soft outer neon glow overlay
+    float rimGlow = pow(1.0 - max(0.0, ndotv), 4.5);
+    
+    // Composite: translucent glass color + iridescence + specular points
+    vec3 glassColor = mix(volumeColor, iridColor, fresnel * 0.68);
+    vec3 finalColor = glassColor + vec3(spec1 * 0.75) + vec3(spec2 * 0.35) + uColor2 * rimGlow * 0.25;
+    
+    gl_FragColor = vec4(finalColor, 0.35 + fresnel * 0.55 + rimGlow * 0.15);
   }
 `
 
@@ -170,15 +203,16 @@ function LiquidOrb({ scrollProgress, mouseRef }: SceneProps) {
   // Shader uniforms
   const uniforms = useMemo(() => ({
     uTime: { value: 0 },
-    uNoiseStrength: { value: 0.18 },
-    uNoiseFrequency: { value: 2.2 },
-    uNoiseSpeed: { value: 0.5 },
+    uNoiseStrength: { value: 0.16 },
+    uNoiseFrequency: { value: 2.5 },
+    uNoiseSpeed: { value: 0.4 },
     uMouse: { value: new THREE.Vector2(0, 0) },
-    uColor1: { value: new THREE.Color('#312e81') }, // Midnight base indigo
-    uColor2: { value: new THREE.Color('#8b5cf6') }, // Vibrant purple highlight
-    uFresnelBias: { value: 0.1 },
-    uFresnelScale: { value: 0.8 },
-    uFresnelPower: { value: 2.5 },
+    uColor1: { value: new THREE.Color('#0c0721') }, // Midnight dark indigo
+    uColor2: { value: new THREE.Color('#00f2fe') }, // Neon glowing cyan
+    uColor3: { value: new THREE.Color('#d946ef') }, // Muted neon magenta/violet
+    uFresnelBias: { value: 0.08 },
+    uFresnelScale: { value: 0.85 },
+    uFresnelPower: { value: 2.8 },
   }), [])
 
   useFrame(({ clock }, delta) => {
