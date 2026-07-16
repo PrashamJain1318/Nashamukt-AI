@@ -1,18 +1,19 @@
 import * as React from "react"
 import { motion, HTMLMotionProps } from "framer-motion"
 import { cn } from "@/lib/utils"
-import { Loader2 } from "lucide-react"
+import { Loader2, Check } from "lucide-react"
 
 export interface ButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'destructive' | 'gradient' | 'glow' | 'outline'
   size?: 'sm' | 'md' | 'lg' | 'icon'
   isLoading?: boolean
+  isSuccess?: boolean
   magnetic?: boolean
   children?: React.ReactNode
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'primary', size = 'md', children, isLoading, magnetic = false, onClick, disabled, ...props }, ref) => {
+  ({ className, variant = 'primary', size = 'md', children, isLoading, isSuccess, magnetic = false, onClick, disabled, ...props }, ref) => {
     const buttonRef = React.useRef<HTMLButtonElement>(null)
     const [ripples, setRipples] = React.useState<{ x: number; y: number; id: number }[]>([])
     const [magnetOffset, setMagnetOffset] = React.useState({ x: 0, y: 0 })
@@ -67,7 +68,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       setMagnetOffset({ x: 0, y: 0 })
     }
 
-    const isDisabled = disabled || isLoading
+    const isDisabled = disabled || isLoading || isSuccess
 
     return (
       <motion.button
@@ -86,13 +87,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isDisabled}
         className={cn(
           "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium",
-          "ring-offset-background transition-colors",
+          "ring-offset-background transition-all duration-300",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
           "disabled:pointer-events-none disabled:opacity-50",
           "relative overflow-hidden select-none",
-          variants[variant],
+          isSuccess ? "bg-success text-success-foreground shadow-lg shadow-success/20 border-success/30" : variants[variant],
           sizes[size],
-          variant === 'glow' && "after:absolute after:inset-0 after:rounded-lg after:opacity-0 hover:after:opacity-100 after:transition-opacity after:bg-white/10",
+          variant === 'glow' && !isSuccess && "after:absolute after:inset-0 after:rounded-lg after:opacity-0 hover:after:opacity-100 after:transition-opacity after:bg-white/10",
           className
         )}
         {...props}
@@ -113,8 +114,18 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           />
         ))}
 
-        {/* Loading spinner */}
-        {isLoading ? (
+        {/* Morphing States */}
+        {isSuccess ? (
+          <motion.span
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="flex items-center gap-1.5 font-bold"
+          >
+            <Check className="h-4 w-4 shrink-0" />
+            <span>Success</span>
+          </motion.span>
+        ) : isLoading ? (
           <motion.span
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -128,7 +139,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
 
         {/* Shimmer sweep on gradient variant */}
-        {variant === 'gradient' && (
+        {variant === 'gradient' && !isSuccess && (
           <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 ease-in-out" />
         )}
       </motion.button>
