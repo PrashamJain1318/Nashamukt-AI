@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAccessibility } from '@/contexts/AccessibilityContext';
 import { useTranslation } from 'react-i18next';
-import { Settings2, Volume2, Type, Sun, Globe } from 'lucide-react';
+import { Settings2, Volume2, Type, Sun, Globe, Cpu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -10,7 +10,8 @@ export function AccessibilityMenu() {
   const { 
     isLargeText, toggleLargeText, 
     isHighContrast, toggleHighContrast, 
-    isVoiceEnabled, toggleVoice 
+    isVoiceEnabled, toggleVoice,
+    isEcoMode, toggleEcoMode
   } = useAccessibility();
   const { t, i18n } = useTranslation();
 
@@ -100,6 +101,15 @@ export function AccessibilityMenu() {
               >
                 <Volume2 className="h-4 w-4" />
                 <span>{t('voiceAssist', 'Voice Assist')}</span>
+              </Button>
+
+              <Button
+                variant={isEcoMode ? 'primary' : 'secondary'}
+                onClick={toggleEcoMode}
+                className="w-full justify-start space-x-3"
+              >
+                <Cpu className="h-4 w-4" />
+                <span>{t('ecoMode', 'Eco Mode (2D)')}</span>
               </Button>
             </div>
           </motion.div>

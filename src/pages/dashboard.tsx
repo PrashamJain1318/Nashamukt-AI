@@ -1,4 +1,5 @@
 import { Suspense, lazy } from 'react'
+import { SkeletonGrid, SkeletonCard } from '@/components/ui/skeleton'
 import { motion, Variants } from "framer-motion"
 import { Activity, Flame, Wallet, HeartPulse, Award, ChevronRight, Calendar, Target, Zap, Star } from 'lucide-react'
 import { useDashboardData } from '@/hooks/api/useDashboard'
@@ -47,14 +48,12 @@ export function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="w-full max-w-6xl mx-auto py-6 flex flex-col gap-6 animate-pulse">
-        <div className="h-10 w-48 bg-secondary/50 rounded-lg mb-4"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[1,2,3,4].map(i => <div key={i} className="h-32 bg-secondary/50 rounded-2xl"></div>)}
-        </div>
+      <div className="w-full max-w-6xl mx-auto py-6 space-y-6">
+        <div className="h-8 w-56 skeleton-wave rounded-lg" />
+        <SkeletonGrid cols={4} />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 h-[400px] bg-secondary/50 rounded-2xl"></div>
-          <div className="h-[400px] bg-secondary/50 rounded-2xl"></div>
+          <div className="lg:col-span-2"><SkeletonCard className="h-[400px]" /></div>
+          <SkeletonCard className="h-[400px]" />
         </div>
       </div>
     )

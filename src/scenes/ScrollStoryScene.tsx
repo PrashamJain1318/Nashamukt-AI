@@ -6,9 +6,7 @@ import * as THREE from 'three'
 import { SceneWrapper } from '@/components/three/SceneWrapper'
 import { usePerformanceDetector } from '@/hooks/three/usePerformanceDetector'
 
-// ─── Shared mutable singleton: GSAP writes, useFrame reads ───────────────────
-// No React re-renders required.
-export const storyScrollProgress = { current: 0 }
+import { storyScrollProgress } from '@/utils/storyProgress'
 
 // ─── Section configuration ────────────────────────────────────────────────────
 const SECTIONS = [

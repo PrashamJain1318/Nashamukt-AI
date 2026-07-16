@@ -28,6 +28,9 @@ const PlanPage = React.lazy(() => import('@/pages/plan').then(m => ({ default: m
 const PublicProfilePage = React.lazy(() => import('@/pages/public-profile').then(m => ({ default: m.PublicProfilePage })))
 const AIInsightsPage = React.lazy(() => import('@/pages/ai-insights').then(m => ({ default: m.AIInsightsPage })))
 const StoryPage = React.lazy(() => import('@/pages/story').then(m => ({ default: m.StoryPage })))
+const AchievementsPage = React.lazy(() => import('@/pages/achievements').then(m => ({ default: m.AchievementsPage })))
+const SimulatorPage = React.lazy(() => import('@/pages/simulator').then(m => ({ default: m.SimulatorPage })))
+const PitchPage = React.lazy(() => import('@/pages/pitch').then(m => ({ default: m.PitchPage })))
 
 function App() {
   return (
@@ -46,6 +49,7 @@ function App() {
             <Route path="design" element={<DesignSystemPage />} />
             <Route path="p/:userId" element={<PublicProfilePage />} />
             <Route path="story" element={<StoryPage />} />
+            <Route path="pitch" element={<PitchPage />} />
           </Route>
 
           {/* Protected Routes */}
@@ -65,6 +69,8 @@ function App() {
               <Route path="community" element={<CommunityPage />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="settings" element={<SettingsPage />} />
+              <Route path="achievements" element={<AchievementsPage />} />
+              <Route path="simulator" element={<SimulatorPage />} />
             </Route>
           </Route>
         </Routes>

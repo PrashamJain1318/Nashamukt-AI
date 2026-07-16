@@ -7,6 +7,8 @@ import { Progress } from '@/components/ui/progress'
 import { useGamificationData, useCompleteMission } from '@/hooks/api/useGamification'
 import { Badge } from '@/components/ui/badge'
 
+import { SkeletonCard } from '@/components/ui/skeleton'
+
 export function ProfilePage() {
   const { data, isLoading } = useGamificationData()
   const completeMission = useCompleteMission()
@@ -21,7 +23,15 @@ export function ProfilePage() {
     visible: { y: 0, opacity: 1 }
   }
 
-  if (isLoading) return <div className="p-8 text-center animate-pulse">Loading Profile...</div>
+  if (isLoading) return (
+    <div className="w-full max-w-6xl mx-auto py-6 space-y-6">
+      <SkeletonCard className="h-40" />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <SkeletonCard className="h-64" />
+        <SkeletonCard className="h-64" />
+      </div>
+    </div>
+  )
 
   const levelProgress = data ? (data.xp / data.nextLevelXp) * 100 : 0;
 
@@ -43,15 +53,20 @@ export function ProfilePage() {
           {/* Decorative background element */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
           
-          <div className="h-24 w-24 md:h-32 md:w-32 rounded-full bg-primary/20 flex items-center justify-center text-primary border-4 border-background shrink-0 shadow-lg relative z-10">
+          <motion.div
+            className="h-24 w-24 md:h-32 md:w-32 rounded-full bg-primary/20 flex items-center justify-center text-primary border-4 border-background shrink-0 shadow-lg relative z-10"
+            whileHover={{ scale: 1.05 }}
+            animate={{ boxShadow: ['0 0 0px rgba(99,102,241,0)', '0 0 20px rgba(99,102,241,0.3)', '0 0 0px rgba(99,102,241,0)'] }}
+            transition={{ duration: 3, repeat: Infinity }}
+          >
             <User className="h-12 w-12 md:h-16 md:w-16" />
-          </div>
+          </motion.div>
           
           <div className="flex-1 text-center md:text-left relative z-10 w-full">
             <div className="flex flex-col md:flex-row justify-between items-center md:items-start mb-4">
               <div>
                 <h2 className="text-2xl md:text-3xl font-bold mb-1 flex items-center justify-center md:justify-start gap-2">
-                  Prasham Jain <Badge className="bg-primary/20 text-primary border-primary/30">Lvl {data?.level}</Badge>
+                  Prasham Jain <Badge variant="gradient" className="bg-primary/20 text-primary border-primary/30">Lvl {data?.level}</Badge>
                 </h2>
                 <p className="text-muted-foreground">Joined October 2023</p>
               </div>
@@ -67,7 +82,7 @@ export function ProfilePage() {
                 <span className="text-warning flex items-center"><Star className="h-4 w-4 mr-1 fill-warning" /> {data?.xp} XP</span>
                 <span className="text-muted-foreground">{data?.nextLevelXp} XP</span>
               </div>
-              <Progress value={levelProgress} className="h-3 bg-secondary" indicatorColor="bg-warning" />
+              <Progress value={levelProgress} className="h-3 bg-secondary" indicatorColor="bg-warning" glow={true} striped={true} />
               <p className="text-xs text-muted-foreground text-right">{(data?.nextLevelXp || 0) - (data?.xp || 0)} XP to Next Level</p>
             </div>
           </div>

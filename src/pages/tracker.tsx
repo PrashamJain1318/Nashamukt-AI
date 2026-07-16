@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { ScrollReveal } from '@/components/ui/page-transition'
+import { SkeletonCard, SkeletonGrid } from '@/components/ui/skeleton'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -78,7 +80,24 @@ export function TrackerPage() {
   }
 
   if (isLoading) {
-    return <div className="p-8 text-center animate-pulse">Loading Tracker Data...</div>
+    return (
+      <div className="space-y-6 w-full">
+        <SkeletonGrid cols={3} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1 space-y-6">
+            <SkeletonCard className="h-64" />
+            <SkeletonCard className="h-80" />
+          </div>
+          <div className="lg:col-span-2 space-y-6">
+            <SkeletonCard className="h-48" />
+            <div className="grid md:grid-cols-2 gap-6">
+              <SkeletonCard className="h-56" />
+              <SkeletonCard className="h-56" />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   const logs = data?.logs || []
@@ -101,10 +120,12 @@ export function TrackerPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Form & Calendar */}
         <div className="lg:col-span-1 space-y-6">
-          <Calendar 
-            onSelectDate={setSelectedDate} 
-            habitData={generateMockHabitData()} 
-          />
+          <motion.div whileHover={{ scale: 1.02 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }}>
+            <Calendar 
+              onSelectDate={setSelectedDate} 
+              habitData={generateMockHabitData()} 
+            />
+          </motion.div>
           
           <Card className="bg-card/50 backdrop-blur-md border-border/50">
             <CardHeader>
@@ -171,10 +192,8 @@ export function TrackerPage() {
                   {errors.reason && <p className="text-xs text-destructive">{errors.reason.message}</p>}
                 </div>
 
-                <Button type="submit" className="w-full" disabled={logHabitMutation.isPending}>
-                  {logHabitMutation.isPending ? (
-                    <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
-                  ) : 'Save Log'}
+                <Button type="submit" variant="gradient" className="w-full" isLoading={logHabitMutation.isPending}>
+                  Save Log
                 </Button>
               </form>
             </CardContent>
@@ -196,6 +215,7 @@ export function TrackerPage() {
           </Card>
 
           <div className="grid md:grid-cols-2 gap-6">
+            <ScrollReveal delay={0.1}>
             <Card className="bg-card/50 backdrop-blur-md border-border/50">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center">
@@ -226,6 +246,7 @@ export function TrackerPage() {
                 </ResponsiveContainer>
               </CardContent>
             </Card>
+            </ScrollReveal>
 
             <Card className="bg-card/50 backdrop-blur-md border-border/50">
               <CardHeader>

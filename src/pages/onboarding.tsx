@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Glass } from '@/components/ui/glass'
+import { Progress } from '@/components/ui/progress'
 import { toast } from 'sonner'
 import { Brain, Heart, Target, ChevronRight, ChevronLeft, Calendar } from 'lucide-react'
 import { apiClient } from '@/lib/api-client'
@@ -94,18 +95,14 @@ export function OnboardingPage() {
       <div className="w-full max-w-2xl">
         {/* Progress Bar */}
         <div className="mb-8">
-          <div className="flex justify-between text-sm font-medium text-muted-foreground mb-2">
-            <span>Step {step} of {totalSteps}</span>
-            <span>{Math.round((step / totalSteps) * 100)}%</span>
-          </div>
-          <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-            <motion.div 
-              className="h-full bg-primary"
-              initial={{ width: 0 }}
-              animate={{ width: `${(step / totalSteps) * 100}%` }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-            />
-          </div>
+          <Progress 
+            value={(step / totalSteps) * 100} 
+            glow={true} 
+            showValue={true} 
+            label={`Step ${step} of ${totalSteps}`}
+            indicatorColor="bg-primary"
+            className="h-2"
+          />
         </div>
 
         <Glass variant="card" className="p-8 md:p-10 relative overflow-hidden rounded-3xl">
@@ -123,9 +120,12 @@ export function OnboardingPage() {
                   className="space-y-6"
                 >
                   <div className="text-center mb-8">
-                    <div className="h-16 w-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <motion.div 
+                      whileHover={{ scale: 1.1, rotate: [0, -10, 10, 0] }}
+                      className="h-16 w-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4"
+                    >
                       <Brain className="h-8 w-8 text-primary" />
-                    </div>
+                    </motion.div>
                     <h2 className="text-3xl font-display font-bold">Let's Get to Know You</h2>
                     <p className="text-muted-foreground mt-2">Basic information to personalize your AI coach.</p>
                   </div>
@@ -166,9 +166,12 @@ export function OnboardingPage() {
                   className="space-y-6"
                 >
                   <div className="text-center mb-8">
-                    <div className="h-16 w-16 bg-destructive/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Heart className="h-8 w-8 text-destructive" />
-                    </div>
+                    <motion.div 
+                      whileHover={{ scale: 1.1, rotate: [0, -10, 10, 0] }}
+                      className="h-16 w-16 bg-destructive/20 rounded-full flex items-center justify-center mx-auto mb-4"
+                    >
+                      <Heart className="h-8 w-8 text-destructive animate-pulse" />
+                    </motion.div>
                     <h2 className="text-3xl font-display font-bold">Your Habit Profile</h2>
                     <p className="text-muted-foreground mt-2">This helps us calculate your health recovery and money saved.</p>
                   </div>
@@ -213,9 +216,12 @@ export function OnboardingPage() {
                   className="space-y-6"
                 >
                   <div className="text-center mb-8">
-                    <div className="h-16 w-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <motion.div 
+                      whileHover={{ scale: 1.1, rotate: [0, -10, 10, 0] }}
+                      className="h-16 w-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4"
+                    >
                       <Target className="h-8 w-8 text-success" />
-                    </div>
+                    </motion.div>
                     <h2 className="text-3xl font-display font-bold">Your Motivation</h2>
                     <p className="text-muted-foreground mt-2">Set your intentions. Why are you choosing freedom?</p>
                   </div>
@@ -255,13 +261,13 @@ export function OnboardingPage() {
               </Button>
               
               {step < totalSteps ? (
-                <Button type="button" onClick={nextStep} className="px-8 rounded-full shadow-lg shadow-primary/20">
+                <Button type="button" onClick={nextStep} variant="gradient" magnetic={true} className="px-8 rounded-full">
                   Continue <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
               ) : (
-                <Button type="submit" disabled={isSubmitting} className="px-8 rounded-full shadow-lg shadow-primary/20">
+                <Button type="submit" disabled={isSubmitting} variant="gradient" magnetic={true} className="px-8 rounded-full">
                   {isSubmitting ? "Saving..." : "Start Journey"} 
-                  {!isSubmitting && <Sparkles className="ml-2 h-4 w-4" />}
+                  {!isSubmitting && <Sparkles className="ml-2 h-4 w-4 animate-pulse" />}
                 </Button>
               )}
             </div>

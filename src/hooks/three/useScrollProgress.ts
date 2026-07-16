@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { storyScrollProgress } from '@/utils/storyProgress'
 
 /**
  * GSAP ScrollTrigger hook that writes scroll progress (0–1)
@@ -23,6 +24,7 @@ export function useScrollProgress(
       scrub: 1.8,          // slightly laggy scrub = cinematic feel
       onUpdate: (self) => {
         progressRef.current = self.progress
+        storyScrollProgress.current = self.progress
 
         if (onSectionChange) {
           const section = Math.min(

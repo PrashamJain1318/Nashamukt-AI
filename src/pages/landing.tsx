@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Suspense, lazy } from 'react'
+import { useAccessibility } from '@/contexts/AccessibilityContext'
 
 import { Shield, Brain, HeartPulse, Activity, MessageSquare, TrendingUp, Sparkles, Star, Download, ChevronRight, CheckCircle2, ChevronDown, Quote } from 'lucide-react'
 import { AnimatedCounter } from '@/components/ui/animated-counter'
@@ -30,15 +31,26 @@ export function LandingPage() {
 
 // 1. HERO SECTION
 function HeroSection() {
+  const { isEcoMode } = useAccessibility()
   return (
     <section className="relative flex flex-col items-center justify-end overflow-hidden bg-background" style={{ minHeight: '100svh' }}>
-      {/* ── FULL VIEWPORT 3D SCENE ── */}
-      <Suspense fallback={
-        // CSS fallback while 3D loads
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
-      }>
-        <TransformationHeroScene />
-      </Suspense>
+      {/* ── FULL VIEWPORT 3D SCENE OR 2D GRID ── */}
+      {isEcoMode ? (
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-violet-950/20 to-background flex items-center justify-center">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
+          <div className="absolute top-6 left-6 flex items-center gap-1.5 text-[9px] font-mono text-cyan-400/60 uppercase">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            <span>Eco 2D Mode active</span>
+          </div>
+        </div>
+      ) : (
+        <Suspense fallback={
+          // CSS fallback while 3D loads
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
+        }>
+          <TransformationHeroScene />
+        </Suspense>
+      )}
 
       {/* Subtle vignette overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-background/90 pointer-events-none" />

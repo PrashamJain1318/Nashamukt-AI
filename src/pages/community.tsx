@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Glass } from '@/components/ui/glass'
 import { Badge } from '@/components/ui/badge'
+import { ScrollReveal } from '@/components/ui/page-transition'
 
 // Mock Data
 const initialPosts = [
@@ -158,7 +159,7 @@ export function CommunityPage() {
                       Post Anonymously
                     </label>
                   </div>
-                  <Button onClick={handlePost} disabled={!newPostContent.trim()} className="rounded-full px-6 flex items-center gap-2">
+                  <Button onClick={handlePost} disabled={!newPostContent.trim()} variant="gradient" className="rounded-full px-6 flex items-center gap-2">
                     Post <Send className="h-4 w-4" />
                   </Button>
                 </div>
@@ -183,7 +184,17 @@ export function CommunityPage() {
           {/* Posts */}
           <AnimatePresence>
             {posts.map((post) => (
-              <motion.div key={post.id} variants={itemVariants} layout initial="hidden" animate="visible" exit={{ opacity: 0, y: -20 }}>
+              <motion.div
+                key={post.id}
+                variants={itemVariants}
+                layout
+                initial="hidden"
+                animate="visible"
+                exit={{ opacity: 0, y: -20 }}
+                whileHover={{ y: -2 }}
+                transition={{ duration: 0.2 }}
+                className="cursor-pointer"
+              >
                 <Card className={`bg-card/50 backdrop-blur-sm transition-colors border-border/50 hover:border-border ${post.isMilestone ? 'border-warning/50 shadow-[0_0_15px_rgba(var(--warning),0.1)]' : ''}`}>
                   <CardContent className="p-5">
                     {post.isMilestone && (
@@ -213,7 +224,12 @@ export function CommunityPage() {
                         onClick={() => handleLike(post.id)}
                         className={`flex items-center gap-1.5 text-sm transition-colors ${post.isLiked ? 'text-destructive hover:text-destructive/80' : 'hover:text-primary'}`}
                       >
-                        <Heart className={`h-4 w-4 ${post.isLiked ? 'fill-destructive' : ''}`} />
+                        <motion.span
+                          animate={{ scale: post.isLiked ? [1, 1.4, 1] : 1 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <Heart className={`h-4 w-4 ${post.isLiked ? 'fill-destructive' : ''}`} />
+                        </motion.span>
                         <span>{post.likes}</span>
                       </button>
                       <button className="flex items-center gap-1.5 text-sm hover:text-primary transition-colors">
@@ -241,18 +257,24 @@ export function CommunityPage() {
               Community Impact
             </h3>
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-secondary/30 p-3 rounded-xl text-center">
-                <span className="block text-2xl font-bold text-primary">{communityStats.activeToday}</span>
-                <span className="text-xs text-muted-foreground">Active Today</span>
-              </div>
-              <div className="bg-secondary/30 p-3 rounded-xl text-center">
-                <span className="block text-2xl font-bold text-success">{communityStats.totalMoneySaved}</span>
-                <span className="text-xs text-muted-foreground">Combined Saved</span>
-              </div>
-              <div className="col-span-2 bg-secondary/30 p-3 rounded-xl flex justify-between items-center">
-                <span className="text-sm font-semibold">Total Days Sober</span>
-                <span className="font-bold text-warning">{communityStats.totalDaysSober}</span>
-              </div>
+              <ScrollReveal delay={0} className="contents">
+                <div className="bg-secondary/30 p-3 rounded-xl text-center">
+                  <span className="block text-2xl font-bold text-primary">{communityStats.activeToday}</span>
+                  <span className="text-xs text-muted-foreground">Active Today</span>
+                </div>
+              </ScrollReveal>
+              <ScrollReveal delay={0.1} className="contents">
+                <div className="bg-secondary/30 p-3 rounded-xl text-center">
+                  <span className="block text-2xl font-bold text-success">{communityStats.totalMoneySaved}</span>
+                  <span className="text-xs text-muted-foreground">Combined Saved</span>
+                </div>
+              </ScrollReveal>
+              <ScrollReveal delay={0.2} className="col-span-2">
+                <div className="bg-secondary/30 p-3 rounded-xl flex justify-between items-center">
+                  <span className="text-sm font-semibold">Total Days Sober</span>
+                  <span className="font-bold text-warning">{communityStats.totalDaysSober}</span>
+                </div>
+              </ScrollReveal>
             </div>
           </Glass>
 
@@ -266,14 +288,20 @@ export function CommunityPage() {
               Streak Leaderboard
             </h3>
             <div className="space-y-4 relative z-10">
-              {leaderboard.map((user) => (
-                <div key={user.name} className={`flex items-center justify-between p-2 rounded-lg ${user.name === "You" ? 'bg-primary/10 border border-primary/20' : ''}`}>
+              {leaderboard.map((user, i) => (
+                <motion.div
+                  key={user.name}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: i * 0.07 }}
+                  className={`flex items-center justify-between p-2 rounded-lg ${user.name === "You" ? 'bg-primary/10 border border-primary/20' : ''}`}
+                >
                   <div className="flex items-center gap-3">
                     <span className={`text-sm font-bold w-4 ${user.rank <= 3 ? 'text-warning' : 'text-muted-foreground'}`}>{user.rank}.</span>
                     <span className={`text-sm font-medium ${user.name === "You" ? 'text-primary' : ''}`}>{user.name}</span>
                   </div>
                   <span className="text-xs font-bold text-success bg-success/10 px-2 py-1 rounded-full">{user.streak}</span>
-                </div>
+                </motion.div>
               ))}
             </div>
           </Glass>

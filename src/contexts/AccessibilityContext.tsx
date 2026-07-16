@@ -7,6 +7,8 @@ interface AccessibilityContextType {
   toggleHighContrast: () => void;
   isVoiceEnabled: boolean;
   toggleVoice: () => void;
+  isEcoMode: boolean;
+  toggleEcoMode: () => void;
   speak: (text: string) => void;
 }
 
@@ -16,6 +18,9 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLargeText, setIsLargeText] = useState(false);
   const [isHighContrast, setIsHighContrast] = useState(false);
   const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);
+  const [isEcoMode, setIsEcoMode] = useState(() => {
+    return localStorage.getItem('accessibility_eco_mode') === 'true';
+  });
 
   useEffect(() => {
     // Apply large text
@@ -36,6 +41,13 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
   const toggleLargeText = () => setIsLargeText(!isLargeText);
   const toggleHighContrast = () => setIsHighContrast(!isHighContrast);
   const toggleVoice = () => setIsVoiceEnabled(!isVoiceEnabled);
+  const toggleEcoMode = () => {
+    setIsEcoMode(prev => {
+      const next = !prev;
+      localStorage.setItem('accessibility_eco_mode', String(next));
+      return next;
+    });
+  };
 
   const speak = (text: string) => {
     if (!isVoiceEnabled) return;
@@ -56,6 +68,8 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
         toggleHighContrast,
         isVoiceEnabled,
         toggleVoice,
+        isEcoMode,
+        toggleEcoMode,
         speak,
       }}
     >

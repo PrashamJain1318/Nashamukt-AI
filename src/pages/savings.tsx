@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { useTheme } from '@/components/theme-provider'
 import { chartColors } from '@/components/ui/chart'
+import { ScrollReveal } from '@/components/ui/page-transition'
 
 const savingsData = [
   { name: 'Jan', spent: 4000, saved: 0 },
@@ -58,7 +59,7 @@ export function MoneySavedPage() {
       {/* Top Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <motion.div variants={itemVariants}>
-          <Glass variant="card" className="p-6 h-full flex flex-col justify-between relative overflow-hidden group">
+          <Glass variant="card" animated={true} className="p-6 h-full flex flex-col justify-between relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
               <TrendingUp className="h-24 w-24 text-success" />
             </div>
@@ -75,7 +76,7 @@ export function MoneySavedPage() {
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <Glass variant="card" className="p-6 h-full flex flex-col justify-between relative overflow-hidden group">
+          <Glass variant="card" animated={true} className="p-6 h-full flex flex-col justify-between relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
               <Calendar className="h-24 w-24 text-primary" />
             </div>
@@ -92,7 +93,7 @@ export function MoneySavedPage() {
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <Glass variant="card" className="p-6 h-full flex flex-col justify-between relative overflow-hidden group">
+          <Glass variant="card" animated={true} className="p-6 h-full flex flex-col justify-between relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
               <CalendarDays className="h-24 w-24 text-primary" />
             </div>
@@ -109,7 +110,7 @@ export function MoneySavedPage() {
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <Glass variant="card" className="p-6 h-full flex flex-col justify-between relative overflow-hidden group">
+          <Glass variant="card" animated={true} className="p-6 h-full flex flex-col justify-between relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
               <Wallet className="h-24 w-24 text-warning" />
             </div>
@@ -129,31 +130,33 @@ export function MoneySavedPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Chart */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
-          <Card className="h-full bg-card/50 backdrop-blur-md border-border/50">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <div className="space-y-1">
-                <CardTitle className="text-xl">Savings vs Spending</CardTitle>
-                <p className="text-sm text-muted-foreground">Your financial trajectory over the last 6 months.</p>
-              </div>
-            </CardHeader>
-            <CardContent className="h-[300px] mt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={savingsData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={colors.grid} />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: colors.text, fontSize: 12 }} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fill: colors.text, fontSize: 12 }} dx={-10} tickFormatter={(val) => `₹${val}`} />
-                  <Tooltip 
-                    cursor={{ fill: 'var(--secondary)', opacity: 0.4 }}
-                    contentStyle={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', borderRadius: '8px' }}
-                    itemStyle={{ color: 'var(--foreground)' }}
-                  />
-                  <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                  <Bar dataKey="spent" name="Money Spent" fill={colors.danger} radius={[4, 4, 0, 0]} maxBarSize={40} />
-                  <Bar dataKey="saved" name="Money Saved" fill={colors.success} radius={[4, 4, 0, 0]} maxBarSize={40} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+          <ScrollReveal delay={0.2}>
+            <Card className="h-full bg-card/50 backdrop-blur-md border-border/50">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <div className="space-y-1">
+                  <CardTitle className="text-xl">Savings vs Spending</CardTitle>
+                  <p className="text-sm text-muted-foreground">Your financial trajectory over the last 6 months.</p>
+                </div>
+              </CardHeader>
+              <CardContent className="h-[300px] mt-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={savingsData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={colors.grid} />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: colors.text, fontSize: 12 }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: colors.text, fontSize: 12 }} dx={-10} tickFormatter={(val) => `₹${val}`} />
+                    <Tooltip 
+                      cursor={{ fill: 'var(--secondary)', opacity: 0.4 }}
+                      contentStyle={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', borderRadius: '8px' }}
+                      itemStyle={{ color: 'var(--foreground)' }}
+                    />
+                    <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                    <Bar dataKey="spent" name="Money Spent" fill={colors.danger} radius={[4, 4, 0, 0]} maxBarSize={40} />
+                    <Bar dataKey="saved" name="Money Saved" fill={colors.success} radius={[4, 4, 0, 0]} maxBarSize={40} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </ScrollReveal>
         </motion.div>
 
         {/* Side Panels */}
@@ -176,7 +179,7 @@ export function MoneySavedPage() {
                 <span className="text-lg text-warning font-semibold">C</span>
               </div>
               <p className="text-sm text-muted-foreground mt-2 mb-4">You're 550 coins away from the Diamond Tier!</p>
-              <Progress value={80} indicatorColor="bg-warning" className="h-2 bg-warning/20" />
+              <Progress value={80} indicatorColor="bg-warning" className="h-2 bg-warning/20" glow={true} showValue={true} />
             </CardContent>
           </Card>
 
@@ -192,7 +195,7 @@ export function MoneySavedPage() {
               <div className="grid grid-cols-2 gap-3">
                 {achievements.map((achieve, i) => {
                   const Icon = achieve.icon
-                  return (
+                  const card = (
                     <div 
                       key={i} 
                       className={`p-3 rounded-xl border flex flex-col items-center justify-center text-center transition-all ${
@@ -206,6 +209,13 @@ export function MoneySavedPage() {
                       </div>
                       <span className="text-xs font-semibold">{achieve.title}</span>
                     </div>
+                  )
+                  return achieve.unlocked ? (
+                    <motion.div key={i} whileHover={{ scale: 1.03 }}>
+                      {card}
+                    </motion.div>
+                  ) : (
+                    <div key={i}>{card}</div>
                   )
                 })}
               </div>

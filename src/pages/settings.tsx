@@ -7,6 +7,7 @@ import { Glass } from '@/components/ui/glass'
 import { useTheme } from '@/components/theme-provider'
 import { toast } from 'sonner'
 
+
 const tabs = [
   { id: 'account', label: 'Account', icon: User },
   { id: 'preferences', label: 'Preferences', icon: Palette },
@@ -20,14 +21,18 @@ export function SettingsPage() {
   const { theme, setTheme } = useTheme()
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteInput, setDeleteInput] = useState("")
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const handleSave = () => {
     toast.success("Settings saved successfully.")
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (deleteInput === "DELETE") {
+      setIsDeleting(true)
+      await new Promise(r => setTimeout(r, 1500))
       toast.success("Account deleted (mock).")
+      setIsDeleting(false)
       setShowDeleteModal(false)
     } else {
       toast.error("Please type DELETE to confirm.")
@@ -57,9 +62,11 @@ export function SettingsPage() {
         <div className="w-full md:w-64 shrink-0 space-y-2">
           <div className="flex md:flex-col overflow-x-auto md:overflow-visible pb-2 md:pb-0 gap-2 scrollbar-hide">
             {tabs.map((tab) => (
-              <button
+              <motion.button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
+                whileHover={{ x: 2 }}
+                whileTap={{ scale: 0.97 }}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all whitespace-nowrap text-sm font-medium ${
                   activeTab === tab.id 
                     ? 'bg-primary text-primary-foreground shadow-md' 
@@ -68,7 +75,7 @@ export function SettingsPage() {
               >
                 <tab.icon className={`h-4 w-4 ${activeTab === tab.id ? 'opacity-100' : 'opacity-70'}`} />
                 {tab.label}
-              </button>
+              </motion.button>
             ))}
           </div>
         </div>
@@ -81,7 +88,7 @@ export function SettingsPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             >
               
               {/* PREFERENCES */}
@@ -91,29 +98,35 @@ export function SettingsPage() {
                     <h3 className="text-lg font-semibold mb-4">Appearance</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       
-                      <button 
+                      <motion.button 
                         onClick={() => setTheme('light')}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${theme === 'light' ? 'border-primary bg-primary/5' : 'border-border/50 hover:border-primary/50'}`}
                       >
                         <Sun className={`h-8 w-8 mb-2 ${theme === 'light' ? 'text-primary' : 'text-muted-foreground'}`} />
                         <span className="font-medium text-sm">Light</span>
-                      </button>
+                      </motion.button>
                       
-                      <button 
+                      <motion.button 
                         onClick={() => setTheme('dark')}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${theme === 'dark' ? 'border-primary bg-primary/5' : 'border-border/50 hover:border-primary/50'}`}
                       >
                         <Moon className={`h-8 w-8 mb-2 ${theme === 'dark' ? 'text-primary' : 'text-muted-foreground'}`} />
                         <span className="font-medium text-sm">Dark</span>
-                      </button>
+                      </motion.button>
                       
-                      <button 
+                      <motion.button 
                         onClick={() => setTheme('system')}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${theme === 'system' ? 'border-primary bg-primary/5' : 'border-border/50 hover:border-primary/50'}`}
                       >
                         <Monitor className={`h-8 w-8 mb-2 ${theme === 'system' ? 'text-primary' : 'text-muted-foreground'}`} />
                         <span className="font-medium text-sm">System</span>
-                      </button>
+                      </motion.button>
 
                     </div>
                   </Glass>
@@ -126,7 +139,7 @@ export function SettingsPage() {
                       <option>Spanish</option>
                     </select>
                     <div className="mt-6 flex justify-end">
-                      <Button onClick={handleSave}>Save Changes</Button>
+                      <Button variant="gradient" magnetic={true} onClick={handleSave}>Save Changes</Button>
                     </div>
                   </Glass>
                 </div>
@@ -148,7 +161,7 @@ export function SettingsPage() {
                       </div>
                     </div>
                     <div className="mt-6 flex justify-end">
-                      <Button onClick={handleSave}>Update Account</Button>
+                      <Button variant="gradient" magnetic={true} onClick={handleSave}>Update Account</Button>
                     </div>
                   </Glass>
                 </div>
@@ -225,7 +238,7 @@ export function SettingsPage() {
                       </p>
                     </CardHeader>
                     <CardContent>
-                      <Button variant="destructive" onClick={() => setShowDeleteModal(true)}>
+                      <Button variant="destructive" isLoading={isDeleting} onClick={() => setShowDeleteModal(true)}>
                         Delete My Account
                       </Button>
                     </CardContent>
@@ -271,7 +284,7 @@ export function SettingsPage() {
               </div>
               <div className="flex justify-end gap-3">
                 <Button variant="ghost" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
-                <Button variant="destructive" onClick={handleDelete}>Permanently Delete</Button>
+                <Button variant="destructive" isLoading={isDeleting} onClick={handleDelete}>Permanently Delete</Button>
               </div>
             </motion.div>
           </div>

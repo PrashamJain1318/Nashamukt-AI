@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom'
 import { ArrowLeft, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useScrollProgress } from '@/hooks/three/useScrollProgress'
-import { storyScrollProgress } from '@/scenes/ScrollStoryScene'
+import { storyScrollProgress } from '@/utils/storyProgress'
+import { useAccessibility } from '@/contexts/AccessibilityContext'
 
 // Lazy-load the heavy Three.js scene
 const ScrollStoryScene = lazy(() =>
@@ -142,8 +143,10 @@ function SectionOverlay({ section }: { section: (typeof SECTIONS)[0] }) {
         >
           <Link to="/register">
             <Button
+              variant="gradient"
+              magnetic={true}
               size="lg"
-              className="h-14 px-10 rounded-full text-base font-semibold shadow-2xl shadow-violet-500/40 hover:shadow-violet-500/60 transition-all duration-300"
+              className="h-14 px-10 rounded-full text-base font-semibold"
             >
               Start Your Journey ✨
             </Button>
@@ -193,6 +196,7 @@ export function StoryPage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [activeSection, setActiveSection] = useState(0)
   const [barProgress, setBarProgress] = useState(0)
+  const { isEcoMode } = useAccessibility()
 
   // Sync section change callback
   const handleSectionChange = useCallback((idx: number) => {
@@ -244,7 +248,24 @@ export function StoryPage() {
               </div>
             }
           >
-            <ScrollStoryScene />
+            {isEcoMode ? (
+              <div className="absolute inset-0 bg-[#02050c] flex items-center justify-center border border-white/5">
+                <div className="absolute top-6 left-6 flex items-center gap-1.5 text-[9px] font-mono text-amber-500 uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
+                  <span>Eco 2D Story Backdrop</span>
+                </div>
+                <div className="text-center p-6 space-y-2">
+                  <div className="text-xl md:text-3xl font-display font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-cyan-400">
+                    JOURNEY STAGE // {activeSection + 1}
+                  </div>
+                  <p className="text-xs text-muted-foreground max-w-xs mx-auto">
+                    3D Canvas deactivated in Eco Mode. Watch the panels animate below as you scroll.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <ScrollStoryScene />
+            )}
           </Suspense>
 
           {/* Cinematic vignette */}
@@ -301,12 +322,12 @@ export function StoryPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/register">
-              <Button size="lg" className="h-14 px-12 rounded-full text-base font-semibold shadow-xl shadow-primary/30">
+              <Button variant="gradient" magnetic={true} size="lg" className="h-14 px-12 rounded-full text-base">
                 Begin Free Trial
               </Button>
             </Link>
             <Link to="/">
-              <Button variant="secondary" size="lg" className="h-14 px-10 rounded-full text-base backdrop-blur-sm">
+              <Button variant="outline" size="lg" className="h-14 px-10 rounded-full text-base backdrop-blur-sm hover:bg-secondary/40">
                 Learn More
               </Button>
             </Link>

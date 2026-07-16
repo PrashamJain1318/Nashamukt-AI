@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { ScrollReveal } from '@/components/ui/page-transition'
 import { BookOpen, Activity, ChevronRight, PenTool } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -99,14 +100,16 @@ export function JournalPage() {
               <label className="text-sm font-medium text-muted-foreground mb-3 block">How are you feeling today?</label>
               <div className="flex justify-between sm:justify-start sm:gap-6">
                 {moodOptions.map((mood) => (
-                  <button
+                  <motion.button
                     key={mood.value}
                     onClick={() => setSelectedMood(mood.value)}
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
                     className={`flex flex-col items-center gap-2 p-2 rounded-xl transition-all ${selectedMood === mood.value ? 'bg-primary/20 scale-110 shadow-sm' : 'hover:bg-secondary opacity-70 hover:opacity-100 grayscale hover:grayscale-0'}`}
                   >
                     <span className="text-3xl">{mood.emoji}</span>
                     <span className={`text-[10px] font-medium ${selectedMood === mood.value ? 'text-primary' : 'text-muted-foreground'}`}>{mood.label}</span>
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
@@ -127,13 +130,15 @@ export function JournalPage() {
                 <label className="text-sm font-medium text-muted-foreground mb-3 block">Stress Level</label>
                 <div className="flex bg-secondary/50 p-1 rounded-xl">
                   {levelOptions.map(level => (
-                    <button
+                    <motion.button
                       key={level}
                       onClick={() => setStressLevel(level)}
+                      whileHover={{ scale: 1.1, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
                       className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors ${stressLevel === level ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                       {level}
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </div>
@@ -141,19 +146,21 @@ export function JournalPage() {
                 <label className="text-sm font-medium text-muted-foreground mb-3 block">Craving Level</label>
                 <div className="flex bg-secondary/50 p-1 rounded-xl">
                   {levelOptions.map(level => (
-                    <button
+                    <motion.button
                       key={level}
                       onClick={() => setCravingLevel(level)}
+                      whileHover={{ scale: 1.1, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
                       className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors ${cravingLevel === level ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                       {level}
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </div>
             </div>
 
-            <Button onClick={handleSave} className="w-full sm:w-auto px-8 rounded-full">
+            <Button variant="gradient" magnetic={true} onClick={handleSave} className="w-full sm:w-auto px-8 rounded-full">
               Save Entry
             </Button>
           </Glass>
@@ -163,6 +170,7 @@ export function JournalPage() {
         <div className="lg:col-span-5 space-y-6">
           
           {/* Analytics Chart */}
+          <ScrollReveal delay={0.15}>
           <motion.div variants={itemVariants}>
             <Card className="bg-card/50 backdrop-blur-md border-border/50">
               <CardHeader className="pb-2">
@@ -188,6 +196,7 @@ export function JournalPage() {
               </CardContent>
             </Card>
           </motion.div>
+          </ScrollReveal>
 
           {/* History */}
           <motion.div variants={itemVariants}>
@@ -198,7 +207,7 @@ export function JournalPage() {
               </h3>
               <div className="space-y-3">
                 {history.map((entry, i) => (
-                  <div key={i} className="p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors border border-transparent hover:border-border/50 cursor-pointer group">
+                  <motion.div key={i} whileHover={{ x: 4 }} className="p-3 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-colors border border-transparent hover:border-border/50 cursor-pointer group">
                     <div className="flex justify-between items-start mb-1">
                       <div className="flex items-center gap-2">
                         <span className="text-xl">{entry.mood}</span>
@@ -210,7 +219,7 @@ export function JournalPage() {
                     <div className="mt-2 text-[10px] text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center">
                       Read full entry <ChevronRight className="h-3 w-3 ml-1" />
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
               <Button variant="ghost" className="w-full mt-4 text-xs">View All History</Button>
