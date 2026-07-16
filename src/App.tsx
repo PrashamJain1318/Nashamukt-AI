@@ -32,7 +32,28 @@ const AchievementsPage = React.lazy(() => import('@/pages/achievements').then(m 
 const SimulatorPage = React.lazy(() => import('@/pages/simulator').then(m => ({ default: m.SimulatorPage })))
 const PitchPage = React.lazy(() => import('@/pages/pitch').then(m => ({ default: m.PitchPage })))
 
+import { useEffect } from 'react'
+import Lenis from 'lenis'
+
 function App() {
+  useEffect(() => {
+    // Initialize Lenis smooth scroll
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    })
+    
+    function raf(time: number) {
+      lenis.raf(time)
+      requestAnimationFrame(raf)
+    }
+    requestAnimationFrame(raf)
+    
+    return () => {
+      lenis.destroy()
+    }
+  }, [])
+
   return (
     <BrowserRouter>
       <Suspense fallback={<LoadingSpinner />}>

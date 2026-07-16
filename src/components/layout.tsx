@@ -9,7 +9,7 @@ import { Footer } from "./footer"
 import { CustomCursor } from "./ui/cursor"
 import { PageTransition } from "./ui/page-transition"
 import { Glass } from "./ui/glass"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion"
 
 const navLinks = [
   { href: '/dashboard', label: 'Dashboard' },
@@ -21,6 +21,9 @@ export function Layout() {
   const { theme, setTheme } = useTheme()
   const location = useLocation()
   const [scrolled, setScrolled] = useState(false)
+  
+  const { scrollYProgress } = useScroll()
+  const scaleX = useSpring(scrollYProgress, { stiffness: 300, damping: 35, restDelta: 0.001 })
 
   // Scroll-aware header
   useEffect(() => {
@@ -32,6 +35,12 @@ export function Layout() {
   return (
     <div className="min-h-screen bg-background font-sans pb-16 md:pb-0 relative overflow-hidden">
       <CustomCursor />
+
+      {/* Global Scroll Progress Bar */}
+      <motion.div 
+        className="fixed top-0 left-0 right-0 h-[3px] bg-primary z-[100] origin-left"
+        style={{ scaleX }}
+      />
 
       {/* Animated background gradients */}
       <motion.div

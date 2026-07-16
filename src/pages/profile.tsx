@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { User, Settings, Award, Calendar, Flame, Wallet, CheckCircle, Target, Lock, Zap, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -6,8 +7,9 @@ import { Glass } from '@/components/ui/glass'
 import { Progress } from '@/components/ui/progress'
 import { useGamificationData, useCompleteMission } from '@/hooks/api/useGamification'
 import { Badge } from '@/components/ui/badge'
-
 import { SkeletonCard } from '@/components/ui/skeleton'
+
+const ProfileAvatarScene = lazy(() => import('@/scenes/ProfileAvatarScene').then(m => ({ default: m.ProfileAvatarScene })))
 
 export function ProfilePage() {
   const { data, isLoading } = useGamificationData()
@@ -54,12 +56,15 @@ export function ProfilePage() {
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
           
           <motion.div
-            className="h-24 w-24 md:h-32 md:w-32 rounded-full bg-primary/20 flex items-center justify-center text-primary border-4 border-background shrink-0 shadow-lg relative z-10"
+            className="h-24 w-24 md:h-32 md:w-32 rounded-full bg-primary/10 flex items-center justify-center text-primary border-4 border-background shrink-0 shadow-lg relative z-10 overflow-hidden"
             whileHover={{ scale: 1.05 }}
-            animate={{ boxShadow: ['0 0 0px rgba(99,102,241,0)', '0 0 20px rgba(99,102,241,0.3)', '0 0 0px rgba(99,102,241,0)'] }}
+            animate={{ boxShadow: ['0 0 0px rgba(168,85,247,0)', '0 0 20px rgba(168,85,247,0.35)', '0 0 0px rgba(168,85,247,0)'] }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            <User className="h-12 w-12 md:h-16 md:w-16" />
+            <Suspense fallback={null}>
+              <ProfileAvatarScene />
+            </Suspense>
+            <User className="h-12 w-12 md:h-16 md:w-16 relative z-10 text-primary-foreground dark:text-foreground" />
           </motion.div>
           
           <div className="flex-1 text-center md:text-left relative z-10 w-full">

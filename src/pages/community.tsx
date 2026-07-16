@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Heart, MessageSquare, Share2, Image as ImageIcon, Smile, Send, TrendingUp, Medal, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Glass } from '@/components/ui/glass'
 import { Badge } from '@/components/ui/badge'
 import { ScrollReveal } from '@/components/ui/page-transition'
+
+const CommunityGlobeScene = lazy(() => import('@/scenes/CommunityGlobeScene').then(m => ({ default: m.CommunityGlobeScene })))
 
 // Mock Data
 const initialPosts = [
@@ -250,6 +252,17 @@ export function CommunityPage() {
         {/* Sidebar */}
         <div className="w-full lg:w-80 space-y-6">
           
+          {/* 3D Global Live Network Globe */}
+          <Glass variant="card" className="p-5 border-border/50 overflow-hidden flex flex-col items-center">
+            <h3 className="font-semibold text-sm flex items-center mb-2 self-start">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse mr-2" />
+              Global Support Network
+            </h3>
+            <Suspense fallback={<div className="h-[180px] w-full flex items-center justify-center text-xs text-muted-foreground animate-pulse font-mono">Initializing network globe...</div>}>
+              <CommunityGlobeScene />
+            </Suspense>
+          </Glass>
+
           {/* Community Stats */}
           <Glass variant="card" className="p-5 border-border/50">
             <h3 className="font-semibold text-lg flex items-center mb-4">
