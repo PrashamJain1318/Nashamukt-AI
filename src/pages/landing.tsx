@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useRef } from 'react'
 import { useAccessibility } from '@/contexts/AccessibilityContext'
 
 import { Shield, Brain, HeartPulse, Activity, MessageSquare, TrendingUp, Sparkles, Star, Download, ChevronRight, CheckCircle2, ChevronDown, Quote } from 'lucide-react'
 import { AnimatedCounter } from '@/components/ui/animated-counter'
 import { Glass } from '@/components/ui/glass'
+import { CanvasCursorTrail } from '@/components/ui/canvas-trail'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 
@@ -32,14 +33,64 @@ export function LandingPage() {
 // 1. HERO SECTION
 function HeroSection() {
   const { isEcoMode } = useAccessibility()
+  const sectionRef = useRef<HTMLDivElement>(null)
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const section = sectionRef.current
+    if (!section) return
+    const rect = section.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    section.style.setProperty('--mouse-x', `${x}px`)
+    section.style.setProperty('--mouse-y', `${y}px`)
+  }
+
   return (
-    <section className="relative w-full min-h-[90vh] md:min-h-screen flex flex-col justify-between overflow-hidden bg-background">
-      {/* Background soft mesh */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-background via-violet-950/5 to-background -z-10" />
+    <section 
+      ref={sectionRef}
+      onMouseMove={handleMouseMove}
+      className="relative w-full min-h-[90vh] md:min-h-screen flex flex-col justify-between overflow-hidden bg-background"
+    >
+      {/* Canvas Cursor Trail (60 FPS particles) */}
+      {!isEcoMode && <CanvasCursorTrail />}
+
+      {/* Dynamic Cursor Glow (Radial gradient backplate) */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-30 bg-[radial-gradient(600px_circle_at_var(--mouse-x,_0px)_var(--mouse-y,_0px),rgba(139,92,246,0.15),transparent_40%)] transition-opacity duration-300"
+        aria-hidden="true"
+      />
+
+      {/* Background soft mesh gradient */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-background via-violet-950/5 to-background -z-10 pointer-events-none" />
+
+      {/* Floating decorative parallax symbols */}
+      <div className="absolute inset-0 pointer-events-none z-0 hidden lg:block overflow-hidden" aria-hidden="true">
+        <motion.div
+          animate={{ y: [0, -12, 0], rotate: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+          className="absolute top-1/4 left-10 opacity-20"
+        >
+          <Shield className="h-10 w-10 text-primary blur-[0.5px]" />
+        </motion.div>
+        <motion.div
+          animate={{ y: [0, 15, 0], rotate: [0, -12, 0] }}
+          transition={{ repeat: Infinity, duration: 7, ease: "easeInOut" }}
+          className="absolute bottom-1/3 left-1/4 opacity-15"
+        >
+          <Brain className="h-8 w-8 text-cyan-400 blur-[0.5px]" />
+        </motion.div>
+        <motion.div
+          animate={{ y: [0, -10, 0], rotate: [0, 10, 0] }}
+          transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+          className="absolute top-1/3 right-1/3 opacity-20"
+        >
+          <Sparkles className="h-6 w-6 text-violet-400 blur-[0.5px]" />
+        </motion.div>
+      </div>
 
       {/* Main Grid content */}
-      <div className="flex-1 max-w-7xl mx-auto w-full flex items-center justify-center py-12 md:py-20 px-4 md:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full z-10">
+      <div className="flex-1 max-w-7xl mx-auto w-full flex items-center justify-center py-12 md:py-20 px-4 md:px-8 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
           
           {/* Left Side: Typography and CTAs */}
           <div className="flex flex-col text-left space-y-6 max-w-xl">
@@ -48,32 +99,46 @@ function HeroSection() {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.15 }}
-              className="inline-flex items-center gap-2 self-start px-4 py-1.5 rounded-full bg-secondary/80 backdrop-blur-sm border border-border/50 text-xs font-semibold text-primary"
+              className="inline-flex items-center gap-2 self-start px-4 py-1.5 rounded-full bg-secondary/80 backdrop-blur-sm border border-border/50 text-xs font-semibold text-primary shadow-sm hover:border-primary/20 transition-all duration-300"
             >
               <Sparkles className="h-3.5 w-3.5" />
               <span>The Future of Addiction Recovery</span>
             </motion.div>
 
-            {/* Headline */}
+            {/* Headline with word stagger reveal */}
             <div className="space-y-1">
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.3 }}
-                className="text-4xl md:text-6xl font-display font-extrabold tracking-tight leading-[1.1] text-foreground"
-              >
-                Break Free. <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-violet-400 to-blue-400">
-                  Reclaim Your Life.
-                </span>
-              </motion.h1>
+              <h1 className="text-4xl md:text-6xl font-display font-extrabold tracking-tight leading-[1.1] text-foreground">
+                {"Break Free.".split(" ").map((word, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 + i * 0.1, type: "spring", stiffness: 100 }}
+                    className="inline-block mr-3"
+                  >
+                    {word}
+                  </motion.span>
+                ))}
+                <br />
+                {"Reclaim Your Life.".split(" ").map((word, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.45 + i * 0.1, type: "spring", stiffness: 100 }}
+                    className="inline-block mr-3 text-transparent bg-clip-text bg-gradient-to-r from-primary via-violet-400 to-blue-400"
+                  >
+                    {word}
+                  </motion.span>
+                ))}
+              </h1>
             </div>
 
             {/* Subtitle */}
             <motion.p
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.45 }}
+              transition={{ duration: 0.7, delay: 0.6 }}
               className="text-base md:text-lg text-muted-foreground leading-relaxed font-light"
             >
               NashaMukt AI helps users overcome addiction through AI guidance, personalized recovery plans, progress tracking, and community support.
@@ -83,7 +148,7 @@ function HeroSection() {
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.6 }}
+              transition={{ duration: 0.7, delay: 0.7 }}
               className="flex flex-col sm:flex-row gap-4 pt-2"
             >
               <Link to="/register" className="w-full sm:w-auto">
@@ -144,6 +209,31 @@ function HeroSection() {
         </div>
       </div>
 
+      {/* Bouncing scroll down mouse indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.1 }}
+        className="absolute bottom-28 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-1 cursor-pointer z-20 hidden md:flex"
+        onClick={() => {
+          const nextSection = document.getElementById('why-this-matters')
+          if (nextSection) {
+            nextSection.scrollIntoView({ behavior: 'smooth' })
+          } else {
+            window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })
+          }
+        }}
+      >
+        <span className="text-[9px] uppercase font-mono tracking-widest text-muted-foreground/80">Explore More</span>
+        <div className="w-5 h-8 rounded-full border border-muted-foreground/30 flex justify-center p-1.5 backdrop-blur-sm bg-background/30 hover:border-primary/50 transition-colors">
+          <motion.div
+            animate={{ y: [0, 6, 0] }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+            className="w-1 h-1.5 bg-primary rounded-full"
+          />
+        </div>
+      </motion.div>
+
       {/* ── STATS BAR ── */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -174,7 +264,7 @@ function HeroSection() {
 // 2. WHY THIS MATTERS
 function WhyThisMattersSection() {
   return (
-    <section className="py-24 px-4 bg-secondary/30 border-y border-border/40">
+    <section id="why-this-matters" className="py-24 px-4 bg-secondary/30 border-y border-border/40">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-display font-bold mb-6">The True Cost of Addiction</h2>
