@@ -23,6 +23,8 @@ interface ParticleEngineProps {
  * High-performance particle field using BufferGeometry + Points.
  * Uses a single draw-call — no looping over individual meshes.
  */
+import { useTheme } from '@/components/theme-provider'
+
 export function ParticleEngine({
   count = 1200,
   spread = 8,
@@ -33,14 +35,36 @@ export function ParticleEngine({
   opacity = 0.75,
 }: ParticleEngineProps) {
   const pointsRef = useRef<THREE.Points>(null!)
+  const { theme } = useTheme()
+  
+  const activeTheme = theme === 'system' 
+    ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : theme
+
+  const isDark = activeTheme === 'dark'
+
+  // Map default violet/blue particle colors to theme colors
+  const finalColor = useMemo(() => {
+    if (color === '#7c3aed' || color === '#7c3aed') {
+      return isDark ? '#a855f7' : '#fbbf24' // Violet for dark, amber for light
+    }
+    return color
+  }, [color, isDark])
+
+  const finalAccentColor = useMemo(() => {
+    if (accentColor === '#3b82f6' || accentColor === '#4f46e5') {
+      return isDark ? '#00f2fe' : '#ffffff' // Cyan for dark, white for light
+    }
+    return accentColor
+  }, [accentColor, isDark])
 
   // Build random positions once
   const { positions, colors } = useMemo(() => {
     const pos = new Float32Array(count * 3)
     const col = new Float32Array(count * 3)
 
-    const c1 = new THREE.Color(color)
-    const c2 = new THREE.Color(accentColor)
+    const c1 = new THREE.Color(finalColor)
+    const c2 = new THREE.Color(finalAccentColor)
 
     for (let i = 0; i < count; i++) {
       const i3 = i * 3
@@ -59,7 +83,7 @@ export function ParticleEngine({
       col[i3 + 2] = mixed.b
     }
     return { positions: pos, colors: col }
-  }, [count, spread, color, accentColor])
+  }, [count, spread, finalColor, finalAccentColor])
 
   useFrame((_, delta) => {
     if (!pointsRef.current) return

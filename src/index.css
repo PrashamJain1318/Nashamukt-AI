@@ -8,31 +8,31 @@
 
 @layer base {
   :root {
-    /* ── Color tokens ── */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* ── Warm White Light Theme Palette ── */
+    --background: 60 8% 98%; /* Warm white background (#fbfbfa) */
+    --foreground: 24 5% 10%; /* Slate charcoal text (#1c1917) */
+    --card: 0 0% 100%; /* Clean card backgrounds */
+    --card-foreground: 24 5% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
+    --popover-foreground: 24 5% 10%;
+    --primary: 221.2 83.2% 53.3%; /* Blue accent (#2563eb) */
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --secondary: 240 5.9% 90%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 5.9% 90%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 5.9% 90%;
+    --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --success: 142 71% 45%;
+    --success: 142 71% 45%; /* Emerald accent (#10b981) */
     --success-foreground: 144 61% 20%;
     --warning: 38 92% 50%;
     --warning-foreground: 32 81% 29%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
+    --border: 0 0% 90%; /* Soft gray borders (#e5e5e5) */
+    --input: 0 0% 90%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.55rem;
 
     /* ── Motion ── */
     --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -45,29 +45,29 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%; /* Pure space black (#09090b) */
+    --background: 228 33% 3%; /* Midnight dark (#05060A) */
     --foreground: 0 0% 98%;
-    --card: 240 10% 4.9%; /* Translucent charcoal glass (#0c0c0e) */
+    --card: 228 35% 5%; /* Deep glass cards (#080a11) */
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
+    --popover: 228 33% 3%;
     --popover-foreground: 0 0% 98%;
-    --primary: 263.4 70% 50.4%; /* Glowing violet */
+    --primary: 221.2 83.2% 53.3%; /* Electric blue accent */
     --primary-foreground: 210 40% 98%;
-    --secondary: 240 3.7% 15.9%;
+    --secondary: 228 20% 12%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
+    --muted: 228 20% 12%;
+    --muted-foreground: 228 10% 64.9%;
+    --accent: 228 20% 12%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --success: 142.1 70.6% 45.3%;
+    --success: 142.1 70.6% 45.3%; /* Emerald accent */
     --success-foreground: 144 61% 98%;
     --warning: 47.9 95.8% 51.8%;
     --warning-foreground: 26 83.3% 14.1%;
-    --border: 240 5.9% 10%; /* Subtle charcoal border lines */
-    --input: 240 5.9% 10%;
-    --ring: 240 4.9% 83.9%;
+    --border: 228 28% 11%; /* Subtle space borders (#141724) */
+    --input: 228 28% 11%;
+    --ring: 221.2 83.2% 53.3%;
   }
 
   /* ── Accessibility Overrides ── */
@@ -384,5 +384,12 @@
     background: hsl(var(--primary) / 0.45);
     border: 2px solid transparent;
     background-clip: content-box;
+  }
+
+  /* ── Smooth Theme Color Morphing ── */
+  body, header, aside, button, input, select, textarea, .glass, .card {
+    transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 }
