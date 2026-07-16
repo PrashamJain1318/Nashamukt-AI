@@ -11,7 +11,7 @@ import { useState } from 'react'
 import { cn } from '@/lib/utils'
 
 // Lazy-load heavy 3D scenes — they won't block the initial paint
-const TransformationHeroScene = lazy(() => import('@/scenes/TransformationHeroScene').then(m => ({ default: m.TransformationHeroScene })))
+const HeroGlassOrbScene = lazy(() => import('@/scenes/HeroGlassOrbScene').then(m => ({ default: m.HeroGlassOrbScene })))
 
 export function LandingPage() {
   return (
@@ -33,112 +33,125 @@ export function LandingPage() {
 function HeroSection() {
   const { isEcoMode } = useAccessibility()
   return (
-    <section className="relative flex flex-col items-center justify-end overflow-hidden bg-background" style={{ minHeight: '100svh' }}>
-      {/* ── FULL VIEWPORT 3D SCENE OR 2D GRID ── */}
-      {isEcoMode ? (
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-violet-950/20 to-background flex items-center justify-center">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
-          <div className="absolute top-6 left-6 flex items-center gap-1.5 text-[9px] font-mono text-cyan-400/60 uppercase">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            <span>Eco 2D Mode active</span>
+    <section className="relative w-full min-h-[90vh] md:min-h-screen flex flex-col justify-between overflow-hidden bg-background">
+      {/* Background soft mesh */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-background via-violet-950/5 to-background -z-10" />
+
+      {/* Main Grid content */}
+      <div className="flex-1 max-w-7xl mx-auto w-full flex items-center justify-center py-12 md:py-20 px-4 md:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full z-10">
+          
+          {/* Left Side: Typography and CTAs */}
+          <div className="flex flex-col text-left space-y-6 max-w-xl">
+            {/* Badge */}
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="inline-flex items-center gap-2 self-start px-4 py-1.5 rounded-full bg-secondary/80 backdrop-blur-sm border border-border/50 text-xs font-semibold text-primary"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>The Future of Addiction Recovery</span>
+            </motion.div>
+
+            {/* Headline */}
+            <div className="space-y-1">
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.3 }}
+                className="text-4xl md:text-6xl font-display font-extrabold tracking-tight leading-[1.1] text-foreground"
+              >
+                Break Free. <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-violet-400 to-blue-400">
+                  Reclaim Your Life.
+                </span>
+              </motion.h1>
+            </div>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.45 }}
+              className="text-base md:text-lg text-muted-foreground leading-relaxed font-light"
+            >
+              NashaMukt AI helps users overcome addiction through AI guidance, personalized recovery plans, progress tracking, and community support.
+            </motion.p>
+
+            {/* Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.6 }}
+              className="flex flex-col sm:flex-row gap-4 pt-2"
+            >
+              <Link to="/register" className="w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  variant="gradient"
+                  className="w-full h-14 px-8 text-base rounded-full shadow-lg font-bold"
+                  magnetic
+                >
+                  Start Recovery <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+              <Link to="/chat" className="w-full sm:w-auto">
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  className="w-full h-14 px-8 text-base rounded-full border border-border/50 hover:bg-secondary/80 font-bold"
+                  magnetic
+                >
+                  Talk to AI Counselor
+                </Button>
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Right Side: Immersive Orb or 2D Fallback */}
+          <div className="w-full flex items-center justify-center relative min-h-[360px] md:min-h-[500px]">
+            {isEcoMode ? (
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.8 }}
+                className="w-full max-w-[420px] aspect-square rounded-full border border-white/5 bg-[#070b13] flex flex-col items-center justify-center p-6 relative shadow-inner overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
+                
+                {/* Pulsing 2D gradient orb */}
+                <div className="w-48 h-48 rounded-full bg-gradient-to-tr from-primary/30 via-violet-500/20 to-cyan-500/30 blur-2xl animate-pulse" />
+                
+                <div className="absolute top-4 left-4 flex items-center gap-1.5 text-[9px] font-mono text-cyan-400/60 uppercase">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                  <span>Eco 2D Mode active</span>
+                </div>
+                <p className="text-[10px] text-muted-foreground text-center mt-6 max-w-xs font-mono">
+                  WebGL 3D Canvas throttled. Pulsing 2D ambient gradient displays in place of shader animations.
+                </p>
+              </motion.div>
+            ) : (
+              <Suspense fallback={
+                <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background flex items-center justify-center">
+                  <div className="text-muted-foreground text-xs font-mono animate-pulse">Initializing 3D Space...</div>
+                </div>
+              }>
+                <HeroGlassOrbScene />
+              </Suspense>
+            )}
           </div>
         </div>
-      ) : (
-        <Suspense fallback={
-          // CSS fallback while 3D loads
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
-        }>
-          <TransformationHeroScene />
-        </Suspense>
-      )}
-
-      {/* Subtle vignette overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-background/90 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-r from-background/50 via-transparent to-background/50 pointer-events-none" />
-
-      {/* ── CENTERED TEXT OVERLAY ── */}
-      <div className="relative z-10 w-full max-w-4xl mx-auto px-4 pb-16 md:pb-24 text-center">
-        {/* Badge */}
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-secondary/80 backdrop-blur-sm border border-border/50 text-sm font-medium"
-        >
-          <Sparkles className="h-4 w-4 text-primary" />
-          <span>The Future of Addiction Recovery</span>
-        </motion.div>
-
-        {/* Headline */}
-        <motion.h1
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.35 }}
-          className="text-5xl md:text-7xl font-display font-extrabold tracking-tight mb-6 leading-[1.1]"
-        >
-          Reclaim Your Life{' '}
-          <br className="hidden md:block" />
-          with{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-violet-400 to-blue-400">
-            NashaMukt AI
-          </span>
-        </motion.h1>
-
-        {/* Subtext */}
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.5 }}
-          className="text-lg md:text-xl text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed font-light"
-        >
-          AI-powered companion to break free from smoking, alcohol &amp; tobacco.
-          Your transformation starts now.
-        </motion.p>
-
-        {/* CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.65 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
-        >
-          <Link to="/register" className="w-full sm:w-auto">
-            <Button
-              size="lg"
-              className="w-full sm:w-auto h-14 px-10 text-base rounded-full shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-all duration-300 font-semibold"
-            >
-              Start Free Trial <ChevronRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
-          <Link to="/chat" className="w-full sm:w-auto">
-            <Button
-              variant="secondary"
-              size="lg"
-              className="w-full sm:w-auto h-14 px-10 text-base rounded-full bg-background/60 backdrop-blur-md border border-border/60 hover:bg-secondary/80 transition-all font-semibold"
-            >
-              Try AI Coach
-            </Button>
-          </Link>
-          <Link to="/story" className="w-full sm:w-auto">
-            <Button
-              variant="ghost"
-              size="lg"
-              className="w-full sm:w-auto h-14 px-8 text-base rounded-full border border-white/20 hover:bg-white/10 hover:border-white/40 transition-all font-medium text-white/80 backdrop-blur-sm"
-            >
-              ✨ Watch the Journey
-            </Button>
-          </Link>
-        </motion.div>
       </div>
 
-      {/* ── STATS BAR (pinned at bottom of 3D area) ── */}
+      {/* ── STATS BAR ── */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.9 }}
+        transition={{ duration: 0.8, delay: 0.8 }}
         className="relative z-10 w-full border-t border-border/30 bg-background/70 backdrop-blur-lg"
       >
-        <div className="max-w-4xl mx-auto px-4 py-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
             { value: 50000, suffix: '+', label: 'Active Users' },
             { value: 120, suffix: 'k', label: 'Cravings Beaten' },
